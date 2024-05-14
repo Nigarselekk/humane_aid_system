@@ -1,76 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:humane_aid_system/pages/needs_page.dart';
+import 'package:humane_aid_system/pages/products_page.dart';
 
-class MainPage extends StatefulWidget { @override
+class MainPage extends StatefulWidget {
+  @override
   _MainPageState createState() => _MainPageState();
 }
 
-
 class _MainPageState extends State<MainPage> {
   final TextEditingController _searchController = TextEditingController();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Main Page'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SearchBar(
-              controller: _searchController,
-              onSubmitted: () {
-                // Burada arama işlemini gerçekleştirin
-                String searchTerm = _searchController.text;
-                print('Aranan: $searchTerm');
-            
-              }, key: Key('searchBar'),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Expanded(
-              child: Placeholder(), // Buraya harita gelecek
-            ),
-          ),
-        
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-              
-                // Butona tıklandığında arama işlemini gerçekleştirin
-                // String searchTerm = _searchController.text;
-                // print('Aranan: $searchTerm');
-
-                // Navigator.pushNamed(context, '/search', arguments: _searchController.text);
-              
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomePage()),
-                      );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // Butonun arka plan rengi
-                padding: EdgeInsets.symmetric(vertical: 20.0), // Buton içeriğinin yüksekliği
-                textStyle: TextStyle(fontSize: 20.0, color: Colors.white), // Buton içeriğinin metin boyutu
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Butonun kenar yuvarlama miktarı
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SearchBar(
+                controller: _searchController,
+                onSubmitted: () {
+                  // Perform search operation here
+                  String searchTerm = _searchController.text;
+                  print('Searched: $searchTerm');
+                },
+                key: Key('searchBar'),
               ),
-              child: Text('What do you need?'),
             ),
-          ),
-        ],
+            Expanded(
+              child: Placeholder(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProductPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  textStyle: TextStyle(fontSize: 20.0, color: Colors.white),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: Text('What do you need?'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
 
 class SearchBar extends StatefulWidget {
   final TextEditingController controller;
@@ -87,8 +77,8 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  List<String> suggestions = ['Item 1', 'Item 2', 'Item 3', 'Item 4']; // Örnek öneri listesi
-  bool showSuggestions = false; // Önerilerin görünürlüğünü kontrol etmek için bir bayrak
+  List<String> suggestions = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
+  bool showSuggestions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -104,19 +94,20 @@ class _SearchBarState extends State<SearchBar> {
           ),
           onTap: () {
             setState(() {
-              showSuggestions = true; // Arama çubuğuna tıklandığında önerileri göster
+              showSuggestions = true;
             });
           },
           onSubmitted: (_) {
             widget.onSubmitted();
           },
         ),
-        if (showSuggestions) // Eğer öneriler gösterilmesi gerekiyorsa
+        if (showSuggestions)
           Container(
-            height: 150, // Öneri listesi için bir yükseklik belirtin
+            height: 150,
             decoration: BoxDecoration(
-              color: Colors.grey[200], // Öneri listesi arka plan rengi
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10.0)), // Kenar yuvarlama
+              color: Colors.grey[200],
+              borderRadius:
+                  BorderRadius.vertical(bottom: Radius.circular(10.0)),
             ),
             child: ListView.builder(
               itemCount: suggestions.length,
@@ -125,8 +116,8 @@ class _SearchBarState extends State<SearchBar> {
                   title: Text(suggestions[index]),
                   onTap: () {
                     setState(() {
-                      widget.controller.text = suggestions[index]; // Seçilen öneriyi arama çubuğuna ekleyin
-                      showSuggestions = false; // Önerileri gizle
+                      widget.controller.text = suggestions[index];
+                      showSuggestions = false;
                     });
                   },
                 );
@@ -137,7 +128,3 @@ class _SearchBarState extends State<SearchBar> {
     );
   }
 }
-
-
-
-

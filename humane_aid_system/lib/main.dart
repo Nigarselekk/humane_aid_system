@@ -16,7 +16,8 @@ class MyApp extends StatelessWidget {
       
         ),
       ),
-      
+      debugShowCheckedModeBanner: false,
+
       home: LoginPage(), // Ana sayfa burada çağrılıyor
     );
   }
