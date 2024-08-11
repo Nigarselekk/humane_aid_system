@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/login/login_page.dart';
+import 'package:humane_aid_system/services/ApiService.dart';
 
 class RegisterPage extends StatefulWidget {
+  final ApiService apiService;
+
+  const RegisterPage({Key? key, required this.apiService}) : super(key: key);
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -13,21 +18,53 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
-    var _nameErrorText;
-    var _surnameErrorText;
-    var _emailErrorText;
-    var _passwordErrorText;
-    var _phoneErrorText;
+  var _nameErrorText ;
+  var _surnameErrorText;
+  var _emailErrorText;
+  var _passwordErrorText;
+  var _phoneErrorText;
 
   void _validateInputs() {
     setState(() {
-      _nameErrorText = _nameController.text.isEmpty ? 'Name is required' : "";
-      _surnameErrorText = _surnameController.text.isEmpty ? 'Surname is required' : "";
-      _emailErrorText = _emailController.text.isEmpty ? 'Email is required' : "";
-      _passwordErrorText = _passwordController.text.isEmpty ? 'Password is required' : "";
-      _phoneErrorText = _phoneController.text.isEmpty ? 'Phone Number is required' : "";
+      _nameErrorText = _nameController.text.isEmpty ? 'Name is required' : null;
+      _surnameErrorText =
+          _surnameController.text.isEmpty ? 'Surname is required' : null;
+      _emailErrorText =
+          _emailController.text.isEmpty ? 'Email is required' : null;
+      _passwordErrorText =
+          _passwordController.text.isEmpty ? 'Password is required' : null;
+      _phoneErrorText =
+          _phoneController.text.isEmpty ? 'Phone Number is required' : null;
+    });
+  }
+
+  void _register() async {
+    _validateInputs();
+    if (_nameErrorText == null &&
+        _surnameErrorText == null &&
+        _emailErrorText == null &&
+        _passwordErrorText == null &&
+        _phoneErrorText == null) {
+      try {
+        final response = await widget.apiService.post('/api/Account/register', {
+          'firstName': _nameController.text,
+          'lastName': _surnameController.text,
+          'email': _emailController.text,
+          'password': _passwordController.text,
+          'confirmPassword': _passwordController.text,
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: $e')),
+        );
+      }
     }
-    );
   }
 
   @override
@@ -48,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 errorText: _nameErrorText,
               ),
             ),
-            SizedBox(height: 16.0),
+            // SizedBox(height: 10.0),
             TextFormField(
               controller: _surnameController,
               decoration: InputDecoration(
@@ -56,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 errorText: _surnameErrorText,
               ),
             ),
-            SizedBox(height: 16.0),
+            // SizedBox(height: 10.0),
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -64,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 errorText: _emailErrorText,
               ),
             ),
-            SizedBox(height: 16.0),
+            // SizedBox(height: 10.0),
             TextFormField(
               controller: _passwordController,
               obscureText: true,
@@ -73,7 +110,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 errorText: _passwordErrorText,
               ),
             ),
-            SizedBox(height: 16.0),
+            // SizedBox(height: 10.0),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Confirm Password',
+                errorText: _passwordErrorText,
+              ),
+            ),
+
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
@@ -82,25 +128,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 errorText: _phoneErrorText,
               ),
             ),
-            SizedBox(height: 32.0),
+
             ElevatedButton(
-              onPressed: () {
-                _validateInputs(); // Register işleminden önce alanları kontrol edin
-                if (_nameController.text.isNotEmpty &&
-                    _surnameController.text.isNotEmpty &&
-                    _emailController.text.isNotEmpty &&
-                    _passwordController.text.isNotEmpty &&
-                    _phoneController.text.isNotEmpty) {
-                  // Register işlemini burada gerçekleştirin
-                  // Örnek: Kayıt başarılı olduğunda bir sonraki sayfaya yönlendirme yapabilirsiniz
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage(),
-                    ),
-                  );
-                }
-              },
+              onPressed: _register,
               child: Text('Register'),
             ),
           ],

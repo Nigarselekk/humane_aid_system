@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:humane_aid_system/login/register_page.dart';
 import 'package:humane_aid_system/login/affected_login_page.dart';
 import 'package:humane_aid_system/login/donor_login_page.dart';
 import 'package:humane_aid_system/login/admin_login_page.dart';
+import 'package:humane_aid_system/pages/map_screen.dart';
+import 'package:humane_aid_system/services/ApiService.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -19,14 +18,9 @@ class LoginPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // Harita widget'ınızı buraya ekleyin
-            // Placeholder widget'ı sadece bir yer tutucu olarak kullanılmıştır,
-            // Gerçek harita widget'ınızı bu yere eklemelisiniz
-
-            Placeholder(
-              color: Colors.black,
+            const Expanded(
+              child: MapSample(),
             ),
-            SizedBox(height: 16.0),
             Center(
               child: ListBody(
                 // mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +35,7 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AffectedLoginPage()),
+                            builder: (context) => AffectedLoginPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
                       );
                     },
                     child: Text('Affected Login',
@@ -53,7 +47,7 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DonorLoginPage()),
+                            builder: (context) => DonorLoginPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
                       );
                     },
                     child: Text('Donor Login',
@@ -65,7 +59,7 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AdminLoginPage()),
+                            builder: (context) => AdminLoginPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
                       );
                     },
                     child: Text('Admin Login',
@@ -80,11 +74,16 @@ class LoginPage extends StatelessWidget {
                       // Kayıt olma sayfasına git
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
+                        MaterialPageRoute(builder: (context) => RegisterPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
                       );
                     },
                     child: const Text(
-                        'If you don\'t have an account, register here.'),
+                      'If you don\'t have an account, register here.',
+                      style: TextStyle(
+                        color: Colors.blue, 
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
                 ],
               ),

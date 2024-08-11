@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:humane_aid_system/login/new_login_page.dart';
+import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:humane_aid_system/pages/products_page.dart';
 
-class MainPage extends StatefulWidget {
+class AffectedMainPage extends StatefulWidget {
+  const AffectedMainPage({super.key});
+
   @override
-  _MainPageState createState() => _MainPageState();
+  _AffectedMainPageState createState() => _AffectedMainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _AffectedMainPageState extends State<AffectedMainPage> {
   final TextEditingController _searchController = TextEditingController();
+
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
+    return Navigator(
+      key: _navigatorKey,
+      onGenerateRoute: (settings) => MaterialPageRoute(
+        builder: (context) => _buildMainPage(),
+      ),
+    );
+  }
+
+  Widget _buildMainPage() {
     return Scaffold(
       appBar: AppBar(
         title: Text('Main Page'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              _logout();
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -32,17 +55,16 @@ class _MainPageState extends State<MainPage> {
                 key: Key('searchBar'),
               ),
             ),
-            Expanded(
-              child: Placeholder(),
+            const Expanded(
+              child: MapSample(),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProductPage()),
-                  );
+                  _navigatorKey.currentState?.push(MaterialPageRoute(
+                    builder: (context) => ProductPage(),
+                  ));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -52,7 +74,12 @@ class _MainPageState extends State<MainPage> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                child: Text('What do you need?'),
+                child: Text(
+                  'What do you need?',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -60,6 +87,27 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
+
+
+  
+  void _logout() {
+    _navigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => LogIn(),
+      ),
+      (route) => false,
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LogIn(),
+      ),
+    );
+  }
+
+
+
+
 }
 
 class SearchBar extends StatefulWidget {
@@ -77,7 +125,6 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  List<String> suggestions = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
   bool showSuggestions = false;
 
   @override
@@ -101,29 +148,7 @@ class _SearchBarState extends State<SearchBar> {
             widget.onSubmitted();
           },
         ),
-        if (showSuggestions)
-          Container(
-            height: 150,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(10.0)),
-            ),
-            child: ListView.builder(
-              itemCount: suggestions.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(suggestions[index]),
-                  onTap: () {
-                    setState(() {
-                      widget.controller.text = suggestions[index];
-                      showSuggestions = false;
-                    });
-                  },
-                );
-              },
-            ),
-          ),
+        
       ],
     );
   }

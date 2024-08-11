@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:humane_aid_system/pages/request_page.dart';
+import 'package:humane_aid_system/models/get_all_product_model.dart';
+import 'package:humane_aid_system/services/get_all_product_service.dart';
+import 'package:humane_aid_system/my_service/my_service_models%20copy/base_model.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({Key? key}) : super(key: key);
@@ -11,24 +13,13 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
   final _selectedColor = Color(0xff1a73e8);
   final _unselectedColor = Color(0xff5f6368);
-  final _tabs = [
-    Tab(text: 'Product1'),
-    Tab(text: 'Product2'),
-    Tab(text: 'Product3'),
-  ];
-
-  final _iconTabs = [
-    Tab(icon: Icon(Icons.home)),
-    Tab(icon: Icon(Icons.search)),
-    Tab(icon: Icon(Icons.settings)),
-  ];
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+        length: 1, vsync: this); // Only one tab for all categories
     super.initState();
   }
 
@@ -38,8 +29,6 @@ class _ProductPageState extends State<ProductPage>
     _tabController.dispose();
   }
 
-  bool _isMouseOver = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,139 +36,50 @@ class _ProductPageState extends State<ProductPage>
         backgroundColor: _selectedColor,
         title: Text(
           "Products",
-          style: TextStyle(color: Colors.white), // Metin rengini beyaz yap
-        ),
-        actions: [
-          // Container(
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(10.0),
-          //     child: IconButton(
-          //       icon: Icon(Icons.add),
-          //       color: Colors.white,
-          //       onPressed: () {
-          //         Navigator.push(
-          //           context,
-          //           MaterialPageRoute(builder: (context) => RequestPage()),
-          //         );
-          //       },
-          //     ),
-          //   ),
-          // ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TabBar(
-              controller: _tabController,
-              tabs: _tabs,
-              labelColor: _selectedColor,
-              indicatorColor: _selectedColor,
-              unselectedLabelColor: _unselectedColor,
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildGrid('Product1'),
-                  _buildGrid('Product2'),
-                  _buildGrid('Product3'),
-                ],
-              ),
-            ),
-            // Container(
-            //   color: Colors.grey[100],
-            //   child: TextButton(
-            //     onPressed: () {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(builder: (context) => RequestPage()),
-            //       );
-            //     },
-            //     child: Text('I couldn \'t find the product I needed.', style: TextStyle(color: Colors.black),
-            //   ),
-            // ),
-            // ),
-          ],
+          style: TextStyle(color: Colors.white),
         ),
       ),
-
-      //   bottomNavigationBar: Container(
-      //     color: Colors.grey,
-      //     child: ElevatedButton(
-      //       onPressed: () {
-      //         Navigator.push(
-      //           context,
-      //           MaterialPageRoute(builder: (context) => RequestPage()),
-      //         );
-      //       },
-      //       child: Text(
-      //         'I couldn \'t find the product I needed.',
-      //         style: TextStyle(color: Colors.black),
-      //       ),
-      //     ),
-      // ),
-    );
-  }
-
-  Widget _buildGrid(String tabName) {
-    return GridView.count(
-      crossAxisCount: 2,
-      children: List.generate(
-        10,
-        (index) {
-          if (index == 9) {
-            // Son öğeyi kontrol ediyoruz
-            return Expanded(
-                child:
-                    _buildLastItem()); // Son öğeyi oluşturmak için ayrı bir fonksiyon çağırıyoruz
-
+      body: FutureBuilder(
+        future: GetAllProductService.getAllProducts(),
+        builder: (context,
+            AsyncSnapshot<BaseModel<List<GetAllProductModel>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData ||
+              snapshot.data!.data == null ||
+              snapshot.data!.data!.isEmpty) {
+            return Center(child: Text('No products available'));
           } else {
-            return Card(
-              child: Center(
-                child: Text('$tabName - Item $index'),
-              ),
-            );
+            List<GetAllProductModel> products = snapshot.data!.data!;
+            return _buildGrid(products);
           }
         },
       ),
     );
   }
 
-  Widget _buildLastItem() {
-    return Card(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RequestPage()),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                "I couldn't find the product I needed.",
-                style: TextStyle(color: Colors.red), // Metin rengini kırmızı yap
-              ),
+  Widget _buildGrid(List<GetAllProductModel> products) {
+    return GridView.builder(
+      itemCount: products.length,
+      gridDelegate:
+          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${products[index].name} selected')),
+            );
+          },
+          child: Card(
+            child: Center(
+              child:
+                  Text('${products[index].category} - ${products[index].name}'),
             ),
           ),
-
-          SizedBox(height: 8.0), 
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RequestPage()),
-              );
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

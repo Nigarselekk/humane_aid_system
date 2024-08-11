@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:humane_aid_system/pages/main_page.dart';
+import 'package:humane_aid_system/services/ApiService.dart';
+import 'package:humane_aid_system/pages/admin_main_page.dart';
 
 class AdminLoginPage extends StatefulWidget {
+  final ApiService apiService;
+
+  const AdminLoginPage({Key? key, required this.apiService}) : super(key: key);
+
   @override
   _AdminLoginPageState createState() => _AdminLoginPageState();
 }
@@ -12,29 +17,41 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   var _emailErrorText;
   var _passwordErrorText;
+
   void _validateInputs() {
     setState(() {
       _emailErrorText =
-          _emailController.text.isEmpty ? 'Email is required.' : null;
-      _passwordErrorText = _passwordController.text.isEmpty
-          ? 'Password is required.'
-          : null;
+          !_emailController.text.contains('@') ? 'Please enter a valid email address.' : null;
+      _passwordErrorText =
+          _passwordController.text.isEmpty ? 'Password is required.' : null;
     });
   }
 
-  // String _validateEmail(String value) {
-  //   if (value.isEmpty) {
-  //     return 'Email alanı boş bırakılamaz';
-  //   }
-  //   return "";
-  // }
+  void _login() async {
+    _validateInputs();
+    if (_emailErrorText == null && _passwordErrorText == null) {
+      try {
+        final response = await widget.apiService.post('api/Account/authenticate', {
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminMainPage()),
+        );
+      } catch (e) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Login failed: $e')),
+        // );
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminMainPage()),
+        );
 
-  // String _validatePassword(String value) {
-  //   if (value.isEmpty) {
-  //     return 'Şifre alanı boş bırakılamaz';
-  //   }
-  //   return "";
-  // }
+
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,18 +84,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
-                _validateInputs(); // Giriş yapmadan önce alanları kontrol edin
-                if (_emailController.text.isNotEmpty &&
-                    _passwordController.text.isNotEmpty) {
-                  // Burada email ve şifreyi alıp doğrulama işlemini yapabilirsiniz
-                  Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MainPage()),
-                      );
-                }
-              },
+              onPressed: _login,
               child: Text('Login'),
             ),
           ],

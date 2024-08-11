@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:humane_aid_system/pages/main_page.dart';
+import 'package:humane_aid_system/pages/affected_main_page.dart';
+import 'package:humane_aid_system/services/ApiService.dart';
 
 class AffectedLoginPage extends StatefulWidget {
+  final ApiService apiService;
+
+  const AffectedLoginPage({Key? key, required this.apiService}) : super(key: key);
+
   @override
   _AffectedLoginPageState createState() => _AffectedLoginPageState();
 }
@@ -12,14 +17,39 @@ class _AffectedLoginPageState extends State<AffectedLoginPage> {
 
   var _emailErrorText;
   var _passwordErrorText;
+
   void _validateInputs() {
     setState(() {
-      _emailErrorText =
-          _emailController.text.isEmpty ? 'Email is required.' : null;
-      _passwordErrorText = _passwordController.text.isEmpty
-          ? 'Password is required.'
-          : null;
+      _emailErrorText = !_emailController.text.contains('@') ? 'Please enter a valid email address.' : null;
+      _passwordErrorText = _passwordController.text.isEmpty ? 'Password is required.' : null;
     });
+  }
+
+  void _login() async {
+    _validateInputs();
+    if (_emailErrorText == null && _passwordErrorText == null) {
+      try {
+        final response = await widget.apiService.post('/Account/authenticate', {
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AffectedMainPage()),
+        );
+      } catch (e) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Login failed: $e')
+        //   ),
+              Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AffectedMainPage()),
+        );
+
+
+        // );
+      }
+    }
   }
 
   @override
@@ -53,18 +83,7 @@ class _AffectedLoginPageState extends State<AffectedLoginPage> {
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
-                _validateInputs(); // Giriş yapmadan önce alanları kontrol edin
-                if (_emailController.text.isNotEmpty &&
-                    _passwordController.text.isNotEmpty) {
-                  // Burada email ve şifreyi alıp doğrulama işlemini yapabilirsiniz
-                  Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MainPage()),
-                      );
-                }
-              },
+              onPressed: _login,
               child: Text('Login'),
             ),
           ],
@@ -73,3 +92,4 @@ class _AffectedLoginPageState extends State<AffectedLoginPage> {
     );
   }
 }
+
