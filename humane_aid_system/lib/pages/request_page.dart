@@ -157,7 +157,7 @@ class _RequestPageState extends State<RequestPage> {
                         SizedBox(height: 5.0),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context); // Go back to Product Page
+                            Navigator.pop(context);  
                           },
                           child: Text(
                             'Cancel',
@@ -204,7 +204,7 @@ class _RequestPageState extends State<RequestPage> {
           backgroundColor: Colors.green,
         ),
       );
-      // Additional logic for request submission can be added here
+    
     }
   }
 }
