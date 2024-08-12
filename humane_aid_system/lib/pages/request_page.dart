@@ -51,7 +51,7 @@ class _RequestPageState extends State<RequestPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Check if product name or region is empty
+         
                 if (_productNameController.text.isEmpty ||
                     _selectedRegion == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -61,7 +61,7 @@ class _RequestPageState extends State<RequestPage> {
                     ),
                   );
                 } else {
-                  // Proceed with the request submission logic
+             
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Your request has been submitted.'),
@@ -69,7 +69,7 @@ class _RequestPageState extends State<RequestPage> {
                       backgroundColor: Colors.green,
                     ),
                   );
-                  // You can add additional logic here to handle the request submission
+   
                 }
               },
               child: Text('Bildir'),
@@ -77,7 +77,7 @@ class _RequestPageState extends State<RequestPage> {
             SizedBox(height: 16.0),
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Sayfayı kapatarak geri dön
+                Navigator.pop(context);  
               },
               child: Text('Go back Product Page'),
             ),
