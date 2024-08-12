@@ -35,7 +35,9 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AffectedLoginPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
+                            builder: (context) => AffectedLoginPage(
+                                apiService: ApiService(
+                                    'https://humaneaidsystem1.azurewebsites.net/swagger'))),
                       );
                     },
                     child: Text('Affected Login',
@@ -47,7 +49,9 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DonorLoginPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
+                            builder: (context) => DonorLoginPage(
+                                apiService: ApiService(
+                                    'https://humaneaidsystem1.azurewebsites.net/swagger'))),
                       );
                     },
                     child: Text('Donor Login',
@@ -59,7 +63,9 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AdminLoginPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
+                            builder: (context) => AdminLoginPage(
+                                apiService: ApiService(
+                                    'https://humaneaidsystem1.azurewebsites.net/swagger'))),
                       );
                     },
                     child: Text('Admin Login',
@@ -80,7 +86,7 @@ class LoginPage extends StatelessWidget {
                     child: const Text(
                       'If you don\'t have an account, register here.',
                       style: TextStyle(
-                        color: Colors.blue, 
+                        color: Colors.blue,
                         decoration: TextDecoration.underline,
                       ),
                     ),

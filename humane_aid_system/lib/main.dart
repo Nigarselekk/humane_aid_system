@@ -6,7 +6,7 @@ import 'package:humane_aid_system/pages/donor_main_page.dart';
 import 'package:humane_aid_system/services/ApiService.dart';
 
 void main() {
-  final String backendUrl = 'https://humaneaidsystem.azurewebsites.net/swagger';
+  final String backendUrl = 'https://humaneaidsystem1.azurewebsites.net/swagger';
 
   final ApiService apiService = ApiService(backendUrl);
 
@@ -27,8 +27,8 @@ class MyApp extends StatelessWidget {
         // textTheme: TextTheme(),
       ),
       debugShowCheckedModeBanner: false,
-      // home: LoginPage(),
-      home: DonorMainPage(),
+      home: LoginPage(),
+      // home: AdminMainPage(),
     );
   }
 }

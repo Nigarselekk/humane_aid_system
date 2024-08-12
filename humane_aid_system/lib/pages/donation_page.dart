@@ -112,7 +112,7 @@ class _DonationPageState extends State<DonationPage> {
                               quantity = value!;
                             });
                           },
-                          items: List.generate(20, (index) => index + 1)
+                          items: List.generate(50, (index) => index + 1)
                               .map((qty) {
                             return DropdownMenuItem(
                               value: qty,

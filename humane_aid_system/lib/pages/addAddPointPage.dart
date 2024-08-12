@@ -11,7 +11,7 @@ class AddAidPointPage extends StatefulWidget {
 class _AddAidPointPageState extends State<AddAidPointPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _aidPointIdController = TextEditingController();
+  // final _aidPointIdController = TextEditingController();
   final _locationController = TextEditingController();
   final _statusController = TextEditingController();
   final _latitudeController = TextEditingController();
@@ -20,7 +20,7 @@ class _AddAidPointPageState extends State<AddAidPointPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _aidPointIdController.dispose();
+    // _aidPointIdController.dispose();
     _locationController.dispose();
     _statusController.dispose();
     _latitudeController.dispose();
@@ -32,7 +32,7 @@ class _AddAidPointPageState extends State<AddAidPointPage> {
     if (_formKey.currentState!.validate()) {
       final aidPoint = AidPointModel(
         name: _nameController.text,
-        aidPointId: _aidPointIdController.text,
+        // aidPointId: _aidPointIdController.text,
         location: _locationController.text,
         status: _statusController.text,
         latitude: double.parse(_latitudeController.text),
@@ -41,12 +41,13 @@ class _AddAidPointPageState extends State<AddAidPointPage> {
 
       try {
         BaseModel<AidPointModel> response = await AidPointService.addAidPoint(
-          aidPoint.name??"",
-          aidPoint.aidPointId??"",
-          aidPoint.location??"",
-          aidPoint.status??"",
-          aidPoint.latitude??0.0,
-          aidPoint.longitude??0.0,);
+          aidPoint.name ?? "",
+          // aidPoint.aidPointId??"",
+          aidPoint.location ?? "",
+          aidPoint.status ?? "",
+          aidPoint.latitude ?? 0.0,
+          aidPoint.longitude ?? 0.0,
+        );
         if (response.succeeded!) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Aid Point added successfully!')),
@@ -86,16 +87,16 @@ class _AddAidPointPageState extends State<AddAidPointPage> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _aidPointIdController,
-                decoration: InputDecoration(labelText: 'Aid Point ID'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an Aid Point ID';
-                  }
-                  return null;
-                },
-              ),
+              // TextFormField(
+              //   controller: _aidPointIdController,
+              //   decoration: InputDecoration(labelText: 'Aid Point ID'),
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Please enter an Aid Point ID';
+              //     }
+              //     return null;
+              //   },
+              // ),
               TextFormField(
                 controller: _locationController,
                 decoration: InputDecoration(labelText: 'Location'),

@@ -1,5 +1,5 @@
 class SI {
-  static const String serverName = "humaneaidsystem.azurewebsites.net";
+  static const String serverName = "humaneaidsystem1.azurewebsites.net";
 
   static String api = "api";
   static String vers = "v1";

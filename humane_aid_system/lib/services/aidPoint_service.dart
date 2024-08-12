@@ -9,7 +9,7 @@ import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
 class AidPointService {
   static Future<BaseModel<AidPointModel>> addAidPoint(
     String name,
-    String aidPointId,
+    // String aidPointId,
     String location,
     String status,
     double latitude,
@@ -27,7 +27,7 @@ class AidPointService {
             body: json.encode(
               <String, dynamic>{
                 "name": name,
-                "aidPointId": aidPointId,
+                // "aidPointId": aidPointId,
                 "location": location,
                 "status": status,
                 "latitude": latitude,
@@ -87,7 +87,48 @@ class AidPointService {
     }
   }
 
-  static Future<BaseModel<List<AidPointModel>>> getAidPoints() async {
+  static Future<BaseModel<List<AidPointModel>>> getAllAidPoints(
+    // int id,
+    String name,
+    String location,
+    String status,
+
+  ) async {
+    try {
+      var url = Uri.https(
+        SI.serverName,
+        '${SI.api}/${SI.aidPoint}/get-all',
+      );
+      final http.Response response = await http
+          .get(
+            url,
+            headers: Me.instance.header,
+            
+
+
+    )
+    
+          .timeout(const Duration(seconds: 60));
+
+      if (response.statusCode == 200) {
+        return BaseModel<List<AidPointModel>>.fromJson(
+            json: json.decode(response.body),
+            d: json.decode(response.body) ?? []
+          );
+      } else {
+        return BaseModel<List<AidPointModel>>.fromJson(
+            json: json.decode(response.body));
+      }
+    
+  
+    } on TimeoutException {
+      throw Exception("Timeout... ");
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+  
+    static Future<BaseModel<List<AidPointModel>>> getAidPoints() async {
     try {
       var url = Uri.https(
         SI.serverName,
@@ -119,4 +160,13 @@ class AidPointService {
       throw Exception(e.toString());
     }
   }
+
+
+
+
+
+
+
+
+
 }

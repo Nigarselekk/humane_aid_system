@@ -58,9 +58,7 @@ class _RequestPageState extends State<RequestPage> {
                     .putIfAbsent(categoryName, () => [])
                     .add(product);
               }
-
               List<String> categories = categoryProducts.keys.toList();
-
               return FutureBuilder<BaseModel<List<AidPointModel>>>(
                 future: _futureAidPoints,
                 builder: (context, aidPointSnapshot) {
@@ -157,7 +155,7 @@ class _RequestPageState extends State<RequestPage> {
                         SizedBox(height: 5.0),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);  
+                            Navigator.pop(context); // Go back to Product Page
                           },
                           child: Text(
                             'Cancel',
@@ -204,7 +202,7 @@ class _RequestPageState extends State<RequestPage> {
           backgroundColor: Colors.green,
         ),
       );
-    
+      // Additional logic for request submission can be added here
     }
   }
 }

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class AidPointModel{
   final String? name;
-  final String? aidPointId;
+  // final String? aidPointId;
   final String? location;
   final String? status;
   final double? latitude;
@@ -10,7 +10,7 @@ class AidPointModel{
 
   AidPointModel({
       this.name = "",
-      this.aidPointId = "",
+      // this.aidPointId = "",
       this.location = "",
       this.status = "",
       this.latitude = 0.0,
@@ -22,7 +22,7 @@ class AidPointModel{
 
   factory AidPointModel.fromJson(Map<String, dynamic> json) => AidPointModel(
         name: json["name"]?? "",
-        aidPointId: json["aidPointId"]?? "",
+        // aidPointId: json["aidPointId"]?? "",
         location: json["location"]?? "",
         status: json["status"]?? "",
         latitude: json["latitude"].toDouble()?? 0.0,
@@ -31,7 +31,7 @@ class AidPointModel{
 
   Map<String, dynamic> toJson() => {
         "name": name,
-        "aidPointId": aidPointId,
+        // "aidPointId": aidPointId,
         "location": location,
         "status": status,
         "latitude": latitude,
