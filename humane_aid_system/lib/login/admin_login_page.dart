@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/login/forget_password_page.dart';
 import 'package:humane_aid_system/login/register_page.dart';
@@ -20,12 +22,12 @@ class AdminLoginPage extends StatefulWidget {
 class _AdminLoginPageState extends State<AdminLoginPage> {
   final _myController1 = TextEditingController();
   final _myController2 = TextEditingController();
-  String _email = "";
-  String _password = "";
+  String _email = "admin@example.com";
+  String _password = "A.1string";
 
   @override
   void initState() {
-    // _autoLogIn();
+    //_autoLogIn();
 
     super.initState();
   }
@@ -194,7 +196,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     );
   }
 
-
   void _showInfo(Future<BaseModel<AuthenticateModel>> _myFuture) {
     showDialog(
         barrierDismissible: true,
@@ -330,20 +331,15 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       if (value) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) =>  AdminMainPage()),
+            MaterialPageRoute(builder: (context) => AdminMainPage()),
             (route) => false);
       }
     });
   }
 
-
   Future<void> _saveInfoAndJump(AuthenticateModel newInfo) async {
     await Me.instance.logInAndSaveInfo(newInfo);
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) =>  AdminMainPage()));
-  } }
-
-
-
-
-
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => AdminMainPage()));
+  }
+}

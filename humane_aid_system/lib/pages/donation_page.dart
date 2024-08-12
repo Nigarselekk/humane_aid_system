@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:humane_aid_system/models/donation_model.dart';
 import 'package:humane_aid_system/services/get_all_product_service.dart';
 import 'package:humane_aid_system/models/get_all_product_model.dart';
+import 'package:humane_aid_system/my_service/my_service/constant.dart';
+import 'package:humane_aid_system/my_service/my_service/server_info.dart';
 import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:http/http.dart' as http;
 
 class DonationPage extends StatefulWidget {
   const DonationPage({super.key});
@@ -14,6 +21,7 @@ class _DonationPageState extends State<DonationPage> {
   String? selectedCategory;
   String? selectedProduct;
   int quantity = 1;
+  int selectedProductId = 0;
 
   Map<String, List<String>> categoryItems = {};
   bool isLoading = true;
@@ -52,6 +60,68 @@ class _DonationPageState extends State<DonationPage> {
       }
     }
     return categoryMap;
+  }
+
+  Future<void> makeDonation() async {
+    if (selectedCategory != null && selectedProduct != null && quantity > 0) {
+      Map<String, dynamic> donationData = {
+        'products': [
+          {
+            'id':  selectedProductId,
+            'name': selectedProduct,
+            'category': selectedCategory,
+            'amount': quantity,
+          }
+        ]
+      };
+
+      try {
+        var url = Uri.https(
+          SI.serverName,
+          '${SI.api}/${SI.aidOffer}/make-donation',
+        );
+
+        var response = await http.post(
+          url,
+          headers: Me.instance.authHeader,
+          body: jsonEncode(donationData),
+        );
+        log(response.body.toString());
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Your donation has been successfully made.Thanks for your donation.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to make donation. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        // print('Error making donation: $e');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to make donation: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      // If any required field is missing, show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select category, product, and quantity.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -127,17 +197,7 @@ class _DonationPageState extends State<DonationPage> {
                   ElevatedButton(
                     onPressed:
                         selectedCategory != null && selectedProduct != null
-                            ? () {
-                                // Donation process
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Your request to donate $quantity $selectedProduct has been received.'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                // Other donation transactions can be made here
-                              }
+                            ? makeDonation
                             : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

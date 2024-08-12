@@ -54,6 +54,36 @@ class AidPointService {
     }
   }
 
+
+
+
+
+
+  static Future<Map<String, dynamic>> searchAidPoints(String keyword) async {
+  try {
+    var url = Uri.https(
+      SI.serverName,
+      '${SI.api}/${SI.aidPoint}/search',
+      {'keyword': keyword},
+    );
+    final response = await http.get(url, headers: Me.instance.header);
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to search aid points');
+    }
+  } catch (e) {
+    throw Exception('Failed to search aid points: $e');
+  }
+}
+
+
+
+
+
+
+
+
   static Future<BaseModel<List<AidPointModel>>> AddAidPoint() async {
     try {
       var url = Uri.https(
@@ -87,48 +117,11 @@ class AidPointService {
     }
   }
 
-  static Future<BaseModel<List<AidPointModel>>> getAllAidPoints(
-    // int id,
-    String name,
-    String location,
-    String status,
-
-  ) async {
-    try {
-      var url = Uri.https(
-        SI.serverName,
-        '${SI.api}/${SI.aidPoint}/get-all',
-      );
-      final http.Response response = await http
-          .get(
-            url,
-            headers: Me.instance.header,
-            
 
 
-    )
-    
-          .timeout(const Duration(seconds: 60));
 
-      if (response.statusCode == 200) {
-        return BaseModel<List<AidPointModel>>.fromJson(
-            json: json.decode(response.body),
-            d: json.decode(response.body) ?? []
-          );
-      } else {
-        return BaseModel<List<AidPointModel>>.fromJson(
-            json: json.decode(response.body));
-      }
-    
-  
-    } on TimeoutException {
-      throw Exception("Timeout... ");
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-  
-    static Future<BaseModel<List<AidPointModel>>> getAidPoints() async {
+
+  static Future<BaseModel<List<AidPointModel>>> getAidPoints() async {
     try {
       var url = Uri.https(
         SI.serverName,
@@ -162,6 +155,49 @@ class AidPointService {
   }
 
 
+  // static Future<BaseModel<List<AidPointModel>>> getAllAidPoints(
+  //   // int id,
+  //   String name,
+  //   String location,
+  //   String status,
+
+  // ) async {
+  //   try {
+  //     var url = Uri.https(
+  //       SI.serverName,
+  //       '${SI.api}/${SI.aidPoint}/get-all',
+  //     );
+  //     final http.Response response = await http
+  //         .get(
+  //           url,
+  //           headers: Me.instance.header,
+            
+
+
+  //   )
+    
+  //         .timeout(const Duration(seconds: 60));
+
+  //     if (response.statusCode == 200) {
+  //       return BaseModel<List<AidPointModel>>.fromJson(
+  //           json: json.decode(response.body),
+  //           d: json.decode(response.body) ?? []
+  //         );
+  //     } else {
+  //       return BaseModel<List<AidPointModel>>.fromJson(
+  //           json: json.decode(response.body));
+  //     }
+    
+  
+  //   } on TimeoutException {
+  //     throw Exception("Timeout... ");
+  //   } catch (e) {
+  //     throw Exception(e.toString());
+  //   }
+  // }
+  
+   
+
 
 
 
@@ -170,3 +206,7 @@ class AidPointService {
 
 
 }
+
+
+
+

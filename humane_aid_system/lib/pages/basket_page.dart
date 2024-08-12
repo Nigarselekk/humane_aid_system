@@ -1,34 +1,89 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/models/aidPoint_model.dart';
 import 'package:humane_aid_system/models/get_all_product_model.dart';
 import 'package:humane_aid_system/services/aid_request_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:humane_aid_system/my_service/my_service/constant.dart';
 import 'package:humane_aid_system/my_service/my_service/server_info.dart';
 
-class BasketPage extends StatelessWidget {
+class BasketPage extends StatefulWidget {
   final Map<int, GetAllProductModel> basket;
-
-  List<String> categories = [];
-  Map<String, List<GetAllProductModel>> products = {};
-  List<AidPointModel> aidPoints = [];
-  String selectedCategory = '';
-  String selectedProduct = '';
-  String selectedRegion = '';
-  String message = '';
 
   BasketPage({required this.basket});
 
+  @override
+  _BasketPageState createState() => _BasketPageState();
+}
+
+class _BasketPageState extends State<BasketPage> {
+  List<AidPointModel> aidPoints = [];
+  AidPointModel? selectedAidPoint;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAidPoints();
+  }
+
+  Future<void> fetchAidPoints() async {
+    try {
+      aidPoints = await getAllAidPoints();
+      setState(() {});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load aid points: $e')),
+      );
+    }
+  }
+
   void makeRequest(BuildContext context) async {
-    List<Map<String, String>> products = basket.values.map((product) {
+    if (selectedAidPoint == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select an aid point'),
+          duration: Duration(seconds: 5), // Süreyi 5 saniye yapıyoruz
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    List<Map<String, String>> products = widget.basket.values.map((product) {
       return {'name': product.name ?? '', 'category': product.category ?? ''};
     }).toList();
 
-    String aidPointName = "aidpoint1";
+    String aidPointName = selectedAidPoint!.name ?? '';
+    List<String> aidPointProducts = selectedAidPoint!.status?.split(' ') ?? [];
+
+    List<String> availableProducts = [];
+    List<String> unavailableProducts = [];
+
+    for (var product in widget.basket.values) {
+      if (aidPointProducts.contains(product.name)) {
+        availableProducts.add(product.name ?? '');
+      } else {
+        unavailableProducts.add(product.name ?? '');
+      }
+    }
+
+    String message = '';
+    if (availableProducts.isNotEmpty) {
+      message += '${availableProducts.join(', ')} yardım noktasında bulunmaktadır. ';
+    }
+    if (unavailableProducts.isNotEmpty) {
+      message += '${unavailableProducts.join(', ')} için talebiniz alınmıştır. En fazla 2 gün içerisinde karşılanacaktır.';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(fontSize: 16.0)),
+        duration: Duration(seconds: 10), // Mesajın gösterim süresi 10 saniye
+        backgroundColor: Colors.blue, // Arka plan rengini mavi yapıyoruz
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
 
     try {
       var response =
@@ -36,16 +91,31 @@ class BasketPage extends StatelessWidget {
 
       if (response.succeeded!) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request successful')),
+          SnackBar(
+            content: Text('Request successful'),
+            duration: Duration(seconds: 5),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request failed: ${response.message}')),
+          SnackBar(
+            content: Text('Request failed: ${response.message}'),
+            duration: Duration(seconds: 5),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Request failed: $e')),
+        SnackBar(
+          content: Text('Request failed: $e'),
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
@@ -60,16 +130,36 @@ class BasketPage extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: basket.length,
+              itemCount: widget.basket.length,
               itemBuilder: (context, index) {
-                int productId = basket.keys.elementAt(index);
-                GetAllProductModel product = basket[productId]!;
+                int productId = widget.basket.keys.elementAt(index);
+                GetAllProductModel product = widget.basket[productId]!;
                 return ListTile(
                   title: Text(product.name ?? ''),
                   subtitle: Text(product.category ?? ''),
                 );
               },
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: aidPoints.isEmpty
+                ? CircularProgressIndicator()
+                : DropdownButton<AidPointModel>(
+                    hint: Text("Choose aid point"),
+                    value: selectedAidPoint,
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedAidPoint = newValue;
+                      });
+                    },
+                    items: aidPoints.map((AidPointModel aidPoint) {
+                      return DropdownMenuItem<AidPointModel>(
+                        value: aidPoint,
+                        child: Text(aidPoint.name ?? ''),
+                      );
+                    }).toList(),
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -82,18 +172,18 @@ class BasketPage extends StatelessWidget {
       ),
     );
   }
-}
 
-Future<List<AidPointModel>> getAllAidPoints() async {
-  var url = Uri.https(
-    SI.serverName,
-    '${SI.api}/${SI.aidPoint}/get-all',
-  );
-  final response = await http.get(url, headers: Me.instance.header);
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    return data.map((aidPoint) => AidPointModel.fromJson(aidPoint)).toList();
-  } else {
-    throw Exception('Failed to load aid points');
+  Future<List<AidPointModel>> getAllAidPoints() async {
+    var url = Uri.https(
+      SI.serverName,
+      '${SI.api}/${SI.aidPoint}/get-all',
+    );
+    final response = await http.get(url, headers: Me.instance.header);
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((aidPoint) => AidPointModel.fromJson(aidPoint)).toList();
+    } else {
+      throw Exception('Failed to load aid points');
+    }
   }
 }

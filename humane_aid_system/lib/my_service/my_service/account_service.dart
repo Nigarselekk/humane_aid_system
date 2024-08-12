@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:http/http.dart' as http;
 import 'package:humane_aid_system/my_service/my_service/constant.dart';
 import 'package:humane_aid_system/my_service/my_service/server_info.dart';
@@ -21,7 +20,7 @@ class AccountService {
       final http.Response response = await http
           .post(
             url,
-            headers: Me.instance.header,  
+            headers: Me.instance.header,
             body: jsonEncode(<String, dynamic>{
               "email": email,
               "password": password,
@@ -32,7 +31,7 @@ class AccountService {
         case 200:
           return BaseModel<AuthenticateModel>.fromJson(
             json: json.decode(response.body),
-            d: AuthenticateModel.fromJson(json.decode(response.body) ?? {}),
+            d: AuthenticateModel.fromJson(json.decode(response.body)["data"] ?? {}),
           );
         default:
           return BaseModel.fromJson(json: json.decode(response.body));
@@ -43,8 +42,6 @@ class AccountService {
       throw Exception(e.toString());
     }
   }
-
-
 
   static Future<BaseModel<bool>> resetPassword(String email) async {
     try {
@@ -61,19 +58,21 @@ class AccountService {
             }),
           )
           .timeout(const Duration(seconds: 60));
-      
+
       if (response.statusCode == 200) {
         var responseBody = json.decode(response.body);
         return BaseModel<bool>(
           succeeded: true,
-          message: responseBody['message'] ?? 'Password reset link sent successfully',
+          message: responseBody['message'] ??
+              'Password reset link sent successfully',
           data: true,
         );
       } else {
         var responseBody = json.decode(response.body);
         return BaseModel<bool>(
           succeeded: false,
-          message: responseBody['message'] ?? 'Failed to send password reset link',
+          message:
+              responseBody['message'] ?? 'Failed to send password reset link',
           data: false,
         );
       }
@@ -92,10 +91,6 @@ class AccountService {
     }
   }
 
-
-
-
-
   static Future<BaseModel<int>> getAnInt(
     int ali,
     bool veli,
@@ -108,7 +103,7 @@ class AccountService {
       final http.Response response = await http
           .post(
             url,
-            headers: Me.instance.header,  
+            headers: Me.instance.header,
             body: jsonEncode(<String, dynamic>{
               "ali": ali,
               "veli": veli,
@@ -130,18 +125,4 @@ class AccountService {
       throw Exception(e.toString());
     }
   }
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-

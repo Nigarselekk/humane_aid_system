@@ -13,20 +13,20 @@ class SearchService {
     try {
       var url = Uri.https(
         SI.serverName,
-        '${SI.api}/${SI.aidPoint}/search',
+        '${SI.api}/${SI.aidPoint}/search?Keyword=$query',
         {'query': query},
       );
       final http.Response response = await http
           .get(
             url,
-            headers: Me.instance.header,
+            headers: Me.instance.authHeader,
           )
           .timeout(const Duration(seconds: 60));
       switch (response.statusCode) {
         case 200:
           return BaseModel<SearchModel>.fromJson(
             json: json.decode(response.body),
-            d: SearchModel.fromJson(json.decode(response.body) ?? {}),
+            d: SearchModel.fromJson(json.decode(response.body)["data"] ?? {}),
           );
         default:
           return BaseModel.fromJson(json: json.decode(response.body));

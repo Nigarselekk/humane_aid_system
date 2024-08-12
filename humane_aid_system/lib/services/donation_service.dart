@@ -94,7 +94,7 @@ class DonationService {
       switch (response.statusCode) {
         case 200:
           return BaseModel<bool>.fromJson(
-            json: json.decode(response.body),
+            json: json.decode(response.body)['data'],
             d: json.decode(response.body) ?? false,
           );
         default:

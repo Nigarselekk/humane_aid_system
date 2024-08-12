@@ -23,7 +23,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _fetchAidPoints() async {
-    final response = await http.get(Uri.parse('http://localhost:5000/api/aidpoint/route'));
+    final response = await http.get(Uri.parse('https://humaneaidsystem1.azurewebsites.net/swagger/api/aidpoint/route'));
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);

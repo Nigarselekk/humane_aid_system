@@ -1,10 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/login/new_login_page.dart';
+import 'package:humane_aid_system/models/aidPoint_model.dart';
 import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:humane_aid_system/pages/products_page.dart';
+import 'package:humane_aid_system/services/aidPoint_service.dart';
+import 'package:humane_aid_system/my_service/my_service/constant.dart';
+import 'package:humane_aid_system/my_service/my_service/server_info.dart';
+import 'package:http/http.dart' as http;
 
 class AffectedMainPage extends StatefulWidget {
-  const AffectedMainPage({super.key});
+  const AffectedMainPage({Key? key}) : super(key: key);
 
   @override
   _AffectedMainPageState createState() => _AffectedMainPageState();
@@ -12,8 +18,10 @@ class AffectedMainPage extends StatefulWidget {
 
 class _AffectedMainPageState extends State<AffectedMainPage> {
   final TextEditingController _searchController = TextEditingController();
-
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
+  List<AidPointModel> _searchResults = [];
+  bool _isSearching = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +56,28 @@ class _AffectedMainPageState extends State<AffectedMainPage> {
               child: SearchBar(
                 controller: _searchController,
                 onSubmitted: () {
-                  // Perform search operation here
                   String searchTerm = _searchController.text;
-                  print('Searched: $searchTerm');
+                  _searchAidPoints(searchTerm);
                 },
                 key: Key('searchBar'),
               ),
             ),
-            const Expanded(
-              child: MapSample(),
+            if (_isSearching)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(
+                  onPressed: _clearSearch,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 208, 211, 220),
+                    textStyle: TextStyle(fontSize: 16.0, color: Colors.white),
+                  ),
+                  child: Text('Back'),
+                ),
+              ),
+            Expanded(
+              child: _isSearching
+                  ? SearchResultsList(searchResults: _searchResults)
+                  : const MapSample(),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -88,8 +109,42 @@ class _AffectedMainPageState extends State<AffectedMainPage> {
     );
   }
 
+  void _searchAidPoints(String keyword) async {
+    try {
+      Map<String, dynamic> searchResult = await AidPointService.searchAidPoints(keyword);
+      if (searchResult.containsKey('data')) {
+        List<AidPointModel> searchResults = (searchResult['data'] as List)
+            .map((item) => AidPointModel.fromJson(item))
+            .toList();
+        setState(() {
+          _searchResults = searchResults;
+          _isSearching = true;
+        });
+        if (searchResults.isNotEmpty) {
+          print('Search results: $searchResults');
+        } else {
+          print('No search results found');
+        }
+      } else {
+        throw Exception('No data found in search result');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to search aid points: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
-  
+  void _clearSearch() {
+    setState(() {
+      _searchResults = [];
+      _isSearching = false;
+    });
+  }
+
   void _logout() {
     _navigatorKey.currentState?.pushAndRemoveUntil(
       MaterialPageRoute(
@@ -97,14 +152,7 @@ class _AffectedMainPageState extends State<AffectedMainPage> {
       ),
       (route) => false,
     );
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LogIn(),
-      ),
-    );
   }
-
 }
 
 class SearchBar extends StatefulWidget {
@@ -122,8 +170,6 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  bool showSuggestions = false;
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -136,17 +182,31 @@ class _SearchBarState extends State<SearchBar> {
             prefixIcon: Icon(Icons.search),
             border: OutlineInputBorder(),
           ),
-          onTap: () {
-            setState(() {
-              showSuggestions = true;
-            });
-          },
           onSubmitted: (_) {
             widget.onSubmitted();
           },
         ),
-        
       ],
+    );
+  }
+}
+
+class SearchResultsList extends StatelessWidget {
+  final List<AidPointModel> searchResults;
+
+  const SearchResultsList({required this.searchResults});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: searchResults.length,
+      itemBuilder: (context, index) {
+        final aidPoint = searchResults[index];
+        return ListTile(
+          title: Text(aidPoint.name ?? 'No Name'),
+          subtitle: Text(aidPoint.location ?? 'No Location'),
+        );
+      },
     );
   }
 }

@@ -25,8 +25,8 @@ class AidPointModel{
         // aidPointId: json["aidPointId"]?? "",
         location: json["location"]?? "",
         status: json["status"]?? "",
-        latitude: json["latitude"].toDouble()?? 0.0,
-        longitude: json["longitude"].toDouble()?? 0.0,
+        latitude: json["latitude"] != null ? json["latitude"].toDouble() : 0.0,
+        longitude: json["longitude"] != null ? json["longitude"].toDouble() : 0.0,
       );
 
   Map<String, dynamic> toJson() => {

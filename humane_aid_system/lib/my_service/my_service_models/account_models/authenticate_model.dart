@@ -1,5 +1,5 @@
-
 import 'dart:convert';
+
 class AuthenticateModel {
     final String? id;
     final String? userName;
@@ -9,26 +9,28 @@ class AuthenticateModel {
     final String? jwToken;
 
     AuthenticateModel({
-        this.id="",
-        this.userName="",
-        this.email="",
-        this.roles=const [],
-        this.isVerified=false,
-        this.jwToken="",
+        this.id,
+        this.userName,
+        this.email,
+        this.roles,
+        this.isVerified,
+        this.jwToken,
     });
+
     factory AuthenticateModel.fromRawJson(String str) => AuthenticateModel.fromJson(json.decode(str));
+
     String toRawJson() => json.encode(toJson());
 
     factory AuthenticateModel.fromJson(Map<String, dynamic> json) => AuthenticateModel(
-        id: json["id"]??"",
-        userName: json["userName"]??"",
-        email: json["email"]??"",
+        id: json["id"],
+        userName: json["userName"],
+        email: json["email"],
         roles: json["roles"] == null ? [] : List<String>.from(json["roles"]!.map((x) => x)),
-        isVerified: json["isVerified"]??false,
-        jwToken: json["jwToken"]??"",
+        isVerified: json["isVerified"],
+        jwToken: json["jwToken"],
     );
-    
-      Map<String, dynamic> toJson() => {
+
+    Map<String, dynamic> toJson() => {
         "id": id,
         "userName": userName,
         "email": email,
@@ -37,3 +39,4 @@ class AuthenticateModel {
         "jwToken": jwToken,
     };
 }
+
