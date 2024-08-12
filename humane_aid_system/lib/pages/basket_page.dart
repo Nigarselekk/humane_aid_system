@@ -1,22 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:humane_aid_system/models/get_all_product_model.dart';
+import 'package:humane_aid_system/services/aid_request_service.dart'; // Yeni servis importu
 
 class BasketPage extends StatelessWidget {
-  final List<String> basket;
-  final Function(String) onRemove;
-  final Function onCheckAvailability;
+  final Map<int, GetAllProductModel> basket;
 
-  const BasketPage({
-    Key? key,
-    required this.basket,
-    required this.onRemove,
-    required this.onCheckAvailability,
-  }) : super(key: key);
+  BasketPage({required this.basket});
+
+  void makeRequest(BuildContext context) async {
+  
+    List<Map<String, String>> products = basket.values.map((product) {
+      return {'name': product.name ?? '', 'category': product.category ?? ''};
+    }).toList();
+
+    // Aid Point Name (örneğin, "aidpoint1")
+    String aidPointName = "aidpoint1";
+
+    try {
+      var response =
+          await AidRequestService.addAidRequest(products, aidPointName);
+
+      
+      if (response.succeeded!) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request successful')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request failed: ${response.message}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Request failed: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Basket'),
+        title: Text("Basket"),
       ),
       body: Column(
         children: [
@@ -24,28 +49,11 @@ class BasketPage extends StatelessWidget {
             child: ListView.builder(
               itemCount: basket.length,
               itemBuilder: (context, index) {
+                int productId = basket.keys.elementAt(index);
+                GetAllProductModel product = basket[productId]!;
                 return ListTile(
-                  title: Text(basket[index]),
-                  trailing: IconButton(
-                    icon: Icon(Icons.remove_circle, color: Colors.red),
-                    onPressed: () {
-                      onRemove(basket[index]);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${basket[index]} removed from basket')),
-                      );
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BasketPage(
-                            basket: basket,
-                            onRemove: onRemove,
-                            onCheckAvailability: onCheckAvailability,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  title: Text(product.name ?? ''),
+                  subtitle: Text(product.category ?? ''),
                 );
               },
             ),
@@ -53,10 +61,8 @@ class BasketPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: () {
-                onCheckAvailability(context);
-              },
-              child: Text('Check Availability'),
+              onPressed: () => makeRequest(context),
+              child: Text('Make a Request'),
             ),
           ),
         ],
@@ -64,4 +70,3 @@ class BasketPage extends StatelessWidget {
     );
   }
 }
-

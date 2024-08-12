@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:humane_aid_system/my_service/my_service_models%20copy/account_models/authenticate_model.dart';
+import 'package:humane_aid_system/my_service/my_service_models/account_models/authenticate_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Me {

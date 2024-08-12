@@ -105,9 +105,6 @@ class _AffectedMainPageState extends State<AffectedMainPage> {
     );
   }
 
-
-
-
 }
 
 class SearchBar extends StatefulWidget {

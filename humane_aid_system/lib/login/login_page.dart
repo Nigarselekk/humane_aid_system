@@ -74,7 +74,7 @@ class LoginPage extends StatelessWidget {
                       // Kayıt olma sayfasına git
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterPage(apiService: ApiService('https://humaneaidsystem.azurewebsites.net/swagger'))),
+                        MaterialPageRoute(builder: (context) => RegisterPage()),
                       );
                     },
                     child: const Text(

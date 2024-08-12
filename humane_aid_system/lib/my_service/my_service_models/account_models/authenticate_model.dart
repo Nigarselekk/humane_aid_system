@@ -1,6 +1,5 @@
 
 import 'dart:convert';
-
 class AuthenticateModel {
     final String? id;
     final String? userName;

@@ -1,11 +1,10 @@
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:humane_aid_system/models/register_model.dart';
-import 'package:humane_aid_system/my_service/my_service%20copy/constant.dart';
-import 'package:humane_aid_system/my_service/my_service%20copy/server_info.dart';
-import 'package:humane_aid_system/my_service/my_service_models%20copy/base_model.dart';
+import 'package:humane_aid_system/my_service/my_service/constant.dart';
+import 'package:humane_aid_system/my_service/my_service/server_info.dart';
+import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
 
 class RegisterService {
   static Future<BaseModel<RegisterModel>> register(
@@ -39,14 +38,16 @@ class RegisterService {
             }),
           )
           .timeout(const Duration(seconds: 60));
-      switch (response.statusCode) {
-        case 200:
-          return BaseModel<RegisterModel>.fromJson(
-            json: json.decode(response.body),
-            d: RegisterModel.fromJson(json.decode(response.body) ?? {}),
-          );
-        default:
-          return BaseModel.fromJson(json: json.decode(response.body));
+          
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        return BaseModel<RegisterModel>.fromJson(
+          json: jsonResponse,
+          d: RegisterModel.fromJson(jsonResponse["data"] ?? {}),
+        );
+      } else {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        return BaseModel.fromJson(json: jsonResponse);
       }
     } on TimeoutException {
       throw Exception("Timeout... ");
@@ -55,7 +56,6 @@ class RegisterService {
     }
   }
 }
-
 
 
 

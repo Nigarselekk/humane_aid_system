@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/login/login_page.dart';
-import 'package:humane_aid_system/login/new_login_page.dart';
+import 'package:humane_aid_system/pages/admin_main_page.dart';
+import 'package:humane_aid_system/pages/affected_main_page.dart';
+import 'package:humane_aid_system/pages/donor_main_page.dart';
 import 'package:humane_aid_system/services/ApiService.dart';
 
 void main() {
-
   final String backendUrl = 'https://humaneaidsystem.azurewebsites.net/swagger';
-  
+
   final ApiService apiService = ApiService(backendUrl);
 
   runApp(MyApp(apiService));
 }
 
 class MyApp extends StatelessWidget {
-  
   final ApiService apiService;
 
   MyApp(this.apiService);
-  
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,8 @@ class MyApp extends StatelessWidget {
         // textTheme: TextTheme(),
       ),
       debugShowCheckedModeBanner: false,
-      home:  LogIn(),
+      // home: LoginPage(),
+      home: DonorMainPage(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:humane_aid_system/pages/addAddPointPage.dart';
 import 'package:humane_aid_system/pages/map_screen.dart';
 
 class AdminMainPage extends StatefulWidget {
@@ -9,6 +10,7 @@ class AdminMainPage extends StatefulWidget {
 class _AdminMainPageState extends State<AdminMainPage> {
   String? selectedHelpPointName;
   String? selectedHelpPointCoordinates;
+  String? selectedProductCategory;
 
   // Method to add a help point
   void addHelpPoint(String name, String coordinates) {
@@ -17,57 +19,11 @@ class _AdminMainPageState extends State<AdminMainPage> {
   }
 
   // Method to delete a help point
-  void deleteHelpPoint(String name, String coordinates) {
+  void removeHelpPoint(String name, String coordinates) {
     // Implement deleting help point functionality here
     print('Help point deleted: $name, $coordinates');
   }
 
-
-  // Method to show confirmation dialog before delete operation
-  Future<void> showDeleteConfirmationDialog(
-      String name, String coordinates) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete Help Point'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                    'Are you sure you want to delete the help point $name at $coordinates?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Delete'),
-              onPressed: () {
-                // Perform delete operation
-                deleteHelpPoint(name, coordinates);
-                Navigator.of(context).pop();
-                // Show snackbar message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('$name at $coordinates deleted!'),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -84,37 +40,60 @@ class _AdminMainPageState extends State<AdminMainPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
+                CustomButton(
+                  text: 'Add Help Point',
                   onPressed: () {
-                    // Implement adding help point functionality
-                    // Show dialog to get help point name and coordinates
+                    // showDialog(
+                    //   context: context,
+                    //   builder: (_) => _buildAddHelpPointDialog(),
+                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddAidPointPage(),
+                      ),
+                    );
+
+
+
+                  },
+                ),
+                CustomButton(
+                  text: 'Remove Help Point',
+                  onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (_) => _buildAddHelpPointDialog(),
+                      builder: (_) => _buildRemoveHelpPointDialog(),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: Text('Add Help Point'),
                 ),
-                ElevatedButton(
+                CustomButton(
+                  text: 'Update Status of Help Point',
                   onPressed: () {
-                    // Implement deleting help point functionality
-                    // Show dialog to get help point name and coordinates
                     showDialog(
                       context: context,
-                      builder: (_) => _buildDeleteHelpPointDialog(),
+                      builder: (_) => _buildUpdateStatusHelpPoint(),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: Text('Delete Help Point'),
                 ),
-        
+                CustomButton(
+                  text: 'Create Product',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => _buildCreateProduct(),
+                    );
+                  },
+                ),
+                CustomButton(
+                  text: 'Delete Product',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => _buildDeleteProduct(),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -170,7 +149,7 @@ class _AdminMainPageState extends State<AdminMainPage> {
   }
 
   // Method to build dialog for deleting a help point
-  Widget _buildDeleteHelpPointDialog() {
+  Widget _buildRemoveHelpPointDialog() {
     return AlertDialog(
       title: Text('Delete Help Point'),
       content: SingleChildScrollView(
@@ -210,4 +189,209 @@ class _AdminMainPageState extends State<AdminMainPage> {
     );
   }
 
+  // Method to build dialog for updating a product
+  Widget _buildCreateProduct() {
+    return AlertDialog(
+      title: Text('Create Product'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(labelText: 'Product Category'),
+              onChanged: (value) {
+                selectedProductCategory = value;
+              },
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Product Name'),
+              onChanged: (value) {
+                selectedHelpPointName = value;
+              },
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Product Coordinates'),
+              onChanged: (value) {
+                selectedHelpPointCoordinates = value;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('Update'),
+          onPressed: () {
+            // Show confirmation dialog before deleting
+            showDeleteConfirmationDialog(
+                selectedHelpPointName!, selectedHelpPointCoordinates!);
+          },
+        ),
+      ],
+    );
+  }
+
+  // Method to show confirmation dialog before delete operation
+  Future<void> showDeleteConfirmationDialog(
+      String name, String coordinates) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Help Point'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to delete the help point $name at $coordinates?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Remove'),
+              onPressed: () {
+                removeHelpPoint(name, coordinates);
+                Navigator.of(context).pop();
+                // Show snackbar message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('$name at $coordinates removed!'),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildUpdateStatusHelpPoint() {
+    return AlertDialog(
+      title: Text('Update Status of Help Point'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(labelText: 'Help Point Name'),
+              onChanged: (value) {
+                selectedHelpPointName = value;
+              },
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Help Point Coordinates'),
+              onChanged: (value) {
+                selectedHelpPointCoordinates = value;
+              },
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Help Point Status'),
+              onChanged: (value) {
+                selectedHelpPointCoordinates = value;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('Update'),
+          onPressed: () {
+            // Show confirmation dialog before deleting
+            showDeleteConfirmationDialog(
+                selectedHelpPointName!, selectedHelpPointCoordinates!);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeleteProduct() {
+    return AlertDialog(
+      title: Text('Delete Product'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(labelText: 'Product Name'),
+              onChanged: (value) {
+                selectedHelpPointName = value;
+              },
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Product Coordinates'),
+              onChanged: (value) {
+                selectedHelpPointCoordinates = value;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('Delete'),
+          onPressed: () {
+            // Show confirmation dialog before deleting
+            showDeleteConfirmationDialog(
+                selectedHelpPointName!, selectedHelpPointCoordinates!);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class CustomButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  CustomButton({required this.text, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: SizedBox(
+        width: double.infinity, // Make the button take the full width
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(vertical: 15.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            textStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+          child: Text(text),
+        ),
+      ),
+    );
+  }
 }
