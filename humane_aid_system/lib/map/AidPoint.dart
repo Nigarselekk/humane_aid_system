@@ -10,7 +10,6 @@ class AidPoint {
   final String status;
   final double latitude;
   final double longitude;
-
   AidPoint({
     required this.id,
     required this.name,

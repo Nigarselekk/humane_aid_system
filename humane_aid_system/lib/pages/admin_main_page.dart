@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:humane_aid_system/models/aidPoint_model.dart';
 import 'package:humane_aid_system/models/aidRequest_model.dart';
 import 'package:humane_aid_system/models/product_model.dart';
+import 'package:humane_aid_system/pages/helpPointsListed_page.dart';
 import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:humane_aid_system/pages/productsByIdList_page.dart';
 import 'package:humane_aid_system/my_service/my_service/constant.dart';
 import 'package:humane_aid_system/my_service/my_service/server_info.dart';
 import 'dart:convert';
@@ -24,6 +26,26 @@ class _AdminMainPageState extends State<AdminMainPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Admin Page'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.list),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductsByIdListPage()),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HelpPointsListedPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -132,11 +154,10 @@ class _AdminMainPageState extends State<AdminMainPage> {
             final response = await createProduct(
                 Me.instance.myInfo.jwToken.toString(), name, category);
 
-            if (response.succeeded!) {
+            if (response.succeeded == true) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                      'Product created successfully! ID: ${response.data!.id}'),
+                  content: Text('Product created successfully!'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -246,20 +267,31 @@ Widget _buildDeleteProduct(BuildContext context) {
             return;
           }
 
-          final response = await deleteProduct(id);
+          try {
+            final response =
+                await deleteProduct(Me.instance.myInfo.jwToken.toString(), id);
 
-          if (response.succeeded == true) {
+            if (response.succeeded == true) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Product deleted successfully!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pop(context);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text('Failed to delete product: ${response.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Product deleted successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pop(context);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Failed to delete product: ${response.message}'),
+                content: Text('Error deleting product: $e'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -271,35 +303,34 @@ Widget _buildDeleteProduct(BuildContext context) {
   );
 }
 
-Future<BaseModel<ProductModel>> deleteProduct(
-  int id,
-) async {
+Future<BaseModel<int>> deleteProduct(String token, int id) async {
   try {
     var url = Uri.https(
       SI.serverName,
       '${SI.api}/${SI.product}/delete',
+      {'id': id.toString()},
     );
-    final http.Response response = await http
-        .post(
-          url,
-          headers: Me.instance.header,
-          body: jsonEncode(<String, dynamic>{
-            "id": id,
-          }),
-        )
-        .timeout(const Duration(seconds: 60));
-    switch (response.statusCode) {
-      case 200:
-        return BaseModel<ProductModel>.fromJson(
-          json: json.decode(response.body),
-          d: ProductModel.fromJson(json.decode(response.body)["data"]) ??
-              ProductModel(),
-        );
-      default:
-        return BaseModel.fromJson(json: json.decode(response.body));
+
+    final http.Response response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    ).timeout(const Duration(seconds: 60));
+
+    print('Response body: ${response.body}'); // Yanıt gövdesini yazdır
+
+    if (response.statusCode == 200) {
+      return BaseModel<int>.fromJson(
+        json: json.decode(response.body),
+        d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
+      );
+    } else {
+      return BaseModel.fromJson(json: json.decode(response.body));
     }
   } on TimeoutException {
-    throw Exception("Timeout... ");
+    throw Exception("Timeout...");
   } catch (e) {
     throw Exception(e.toString());
   }
@@ -349,7 +380,8 @@ Widget _buildUpdateStatusHelpPoint(BuildContext context) {
             return;
           }
 
-          final response = await updateAidPointStatus(id, status);
+          final response = await updateAidPointStatus(
+              Me.instance.myInfo.jwToken.toString(), id, status);
 
           if (response.succeeded == true) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -375,19 +407,20 @@ Widget _buildUpdateStatusHelpPoint(BuildContext context) {
   );
 }
 
-Future<BaseModel<AidPointModel>> updateAidPointStatus(
+Future<BaseModel<int>> updateAidPointStatus(
+  String token,
   int id,
   String status,
 ) async {
   try {
     var url = Uri.https(
       SI.serverName,
-      '${SI.api}/${SI.aidPoint}/update-status',
+      '${SI.api}/${SI.aidPoint}/update-status/$id ',
     );
     final http.Response response = await http
         .put(
           url,
-          headers: Me.instance.header,
+          headers: Me.instance.authHeader,
           body: jsonEncode(<String, dynamic>{
             "id": id,
             "status": status,
@@ -396,10 +429,9 @@ Future<BaseModel<AidPointModel>> updateAidPointStatus(
         .timeout(const Duration(seconds: 60));
     switch (response.statusCode) {
       case 200:
-        return BaseModel<AidPointModel>.fromJson(
+        return BaseModel<int>.fromJson(
           json: json.decode(response.body),
-          d: AidPointModel.fromJson(json.decode(response.body)["data"]) ??
-              AidPointModel(),
+          d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
         );
       default:
         return BaseModel.fromJson(json: json.decode(response.body));
@@ -443,22 +475,32 @@ Widget _buildRemoveHelpPoint(BuildContext context) {
             return;
           }
 
-          final response =
-              await removeHelpPoint(Me.instance.myInfo.jwToken.toString(), id);
+          try {
+            final response = await removeHelpPoint(
+                Me.instance.myInfo.jwToken.toString(), id);
 
-          if (response.succeeded == true) {
+            if (response.succeeded == true) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Help Point removed successfully!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pop(context);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text('Failed to remove help point: ${response.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          } catch (e) {
+            log('Error: $e');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Help Point removed successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pop(context);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content:
-                    Text('Failed to remove help point: ${response.message}'),
+                content: Text('Error removing help point: $e'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -470,37 +512,65 @@ Widget _buildRemoveHelpPoint(BuildContext context) {
   );
 }
 
-Future<BaseModel<int>> removeHelpPoint(
-  String token,
-  int id,
-) async {
+Future<BaseModel<int>> removeHelpPoint(String token, int id) async {
   try {
     var url = Uri.https(
       SI.serverName,
-      '${SI.api}/${SI.aidPoint}/remove/${id}',
+      '${SI.api}/${SI.aidPoint}/remove/$id',
     );
-    final http.Response response = await http
-        .post(
-          url,
-          headers: Me.instance.authHeader,
-          body: jsonEncode(<String, dynamic>{
-            "id": id,
-          }),
-        )
-        .timeout(const Duration(seconds: 60));
-    switch (response.statusCode) {
-      case 200:
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    ).timeout(const Duration(seconds: 60));
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (response.body.isNotEmpty) {
+        final responseBody = json.decode(response.body);
         return BaseModel<int>.fromJson(
-          json: json.decode(response.body),
-          d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
+          json: responseBody,
+          d: int.tryParse(responseBody["data"].toString()) ?? 0,
         );
-      default:
-        return BaseModel.fromJson(json: json.decode(response.body));
+      } else {
+        return BaseModel<int>(
+          succeeded: true,
+          message: 'Empty response body, but succeeded',
+          data: id,
+        );
+      }
+    } else {
+      if (response.body.isNotEmpty) {
+        final responseBody = json.decode(response.body);
+        return BaseModel<int>.fromJson(
+          json: responseBody,
+          d: 0,
+        );
+      } else {
+        return BaseModel<int>(
+          succeeded: false,
+          message: 'Error: ${response.statusCode}',
+          data: 0,
+        );
+      }
     }
   } on TimeoutException {
-    throw Exception("Timeout... ");
+    return BaseModel<int>(
+      succeeded: false,
+      message: "Timeout...",
+      data: 0,
+    );
   } catch (e) {
-    throw Exception(e.toString());
+    return BaseModel<int>(
+      succeeded: false,
+      message: e.toString(),
+      data: 0,
+    );
   }
 }
 
