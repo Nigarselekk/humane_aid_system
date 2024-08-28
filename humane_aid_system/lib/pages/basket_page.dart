@@ -4,8 +4,8 @@ import 'package:humane_aid_system/models/get_all_product_model.dart';
 import 'package:humane_aid_system/services/aid_request_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
 
 class BasketPage extends StatefulWidget {
   final Map<int, GetAllProductModel> basket;
@@ -70,17 +70,19 @@ class _BasketPageState extends State<BasketPage> {
 
     String message = '';
     if (availableProducts.isNotEmpty) {
-      message += '${availableProducts.join(', ')} yardım noktasında bulunmaktadır. ';
+      message +=
+          '${availableProducts.join(', ')} are available on help point. . ';
     }
     if (unavailableProducts.isNotEmpty) {
-      message += '${unavailableProducts.join(', ')} için talebiniz alınmıştır. En fazla 2 gün içerisinde karşılanacaktır.';
+      message +=
+          '${unavailableProducts.join(', ')} request has been received. Your request will be met within maximum 2 days..';
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: TextStyle(fontSize: 16.0)),
         duration: Duration(seconds: 10), // Mesajın gösterim süresi 10 saniye
-        backgroundColor: Colors.blue, // Arka plan rengini mavi yapıyoruz
+        backgroundColor: Colors.blue, 
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -89,7 +91,7 @@ class _BasketPageState extends State<BasketPage> {
       var response =
           await AidRequestService.addAidRequest(products, aidPointName);
 
-      if (response.succeeded!) {
+      if (response.succeeded == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Request successful'),

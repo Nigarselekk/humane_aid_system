@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/models/get_all_product_model.dart';
 import 'package:humane_aid_system/services/get_all_product_service.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class AllProductsForDonor extends StatefulWidget {
   const AllProductsForDonor({Key? key}) : super(key: key);

@@ -67,25 +67,5 @@
 //   }
 // }
 
-// // Example usage of serialization and deserialization
-// void main() {
-//   // Example request
-//   var request = AuthenticateRequest(email: 'example@example.com', password: 'password');
-//   var requestJson = jsonEncode(request.toJson());
-//   print('Request JSON: $requestJson');
-
-//   // Example response JSON
-//   var responseJson = '''{
-//     "Succeeded": succeeded,
-//     "Message": "",
-//     "Errors": null,
-//     "Data": null
-//   }''';
-
-//   var response = AuthenticateResponse.fromJson(jsonDecode(responseJson));
-//   print('Response: succeeded=${response.succeeded}, message=${response.message}');
-// }
-
-
-
+  
 

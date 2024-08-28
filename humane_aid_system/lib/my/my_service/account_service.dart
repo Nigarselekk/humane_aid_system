@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
-import 'package:humane_aid_system/my_service/my_service_models/account_models/authenticate_model.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
+import 'package:humane_aid_system/my/my_service_models/account_models/authenticate_model.dart';
 import 'dart:convert';
-
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class AccountService {
   static Future<BaseModel<AuthenticateModel>> authenticate(

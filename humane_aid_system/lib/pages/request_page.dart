@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:humane_aid_system/models/get_all_product_model.dart';
 import 'package:humane_aid_system/models/aidPoint_model.dart';
 import 'package:humane_aid_system/services/aidPoint_service.dart';
+import 'package:humane_aid_system/services/aid_request_service.dart';
 import 'package:humane_aid_system/services/get_all_product_service.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class RequestPage extends StatefulWidget {
   const RequestPage({Key? key}) : super(key: key);
@@ -183,7 +184,7 @@ class _RequestPageState extends State<RequestPage> {
     super.dispose();
   }
 
-  void _submitRequest() {
+  void _submitRequest() async {
     if (_selectedProduct == null ||
         _selectedCategory == null ||
         _selectedAidPoint == null) {
@@ -195,14 +196,43 @@ class _RequestPageState extends State<RequestPage> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Your request has been submitted.'),
-          duration: Duration(seconds: 3),
-          backgroundColor: Colors.green,
-        ),
-      );
-      // Additional logic for request submission can be added here
+      try {
+        final products = [
+          {
+            "productId": _selectedProduct!,
+            
+          }
+        ];
+
+        final response = await AidRequestService.addAidRequest(
+            products.cast<Map<String, String>>(), _selectedAidPoint!);
+
+        if (response.succeeded == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Your request has been submitted.'),
+              duration: Duration(seconds: 3),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to submit request: ${response.message}'),
+              duration: Duration(seconds: 3),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: $e'),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:humane_aid_system/models/register_model.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class RegisterService {
   static Future<BaseModel<RegisterModel>> register(
@@ -63,31 +63,6 @@ class RegisterService {
 
 
 
-
-
-// import 'dart:convert';
-// import 'package:http/http.dart' as http;
-// import 'package:humane_aid_system/models/register_request_model.dart';
-
-// class ApiService {
-//   final String baseUrl;
-
-//   ApiService({required this.baseUrl});
-
-//   Future<RegisterResponse> register(RegisterRequest request) async {
-//     final response = await http.post(
-//       Uri.parse('$baseUrl/api/account/register'),
-//       headers: {'Content-Type': 'application/json'},
-//       body: jsonEncode(request.toJson()),
-//     );
-
-//     if (response.statusCode == 200) {
-//       return RegisterResponse.fromJson(jsonDecode(response.body));
-//     } else {
-//       throw Exception('Failed to register');
-//     }
-//   }
-// }
 
 
 

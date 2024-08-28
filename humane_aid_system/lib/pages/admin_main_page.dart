@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:humane_aid_system/models/aidPoint_model.dart';
-import 'package:humane_aid_system/models/aidRequest_model.dart';
-import 'package:humane_aid_system/models/product_model.dart';
 import 'package:humane_aid_system/pages/helpPointsListed_page.dart';
-import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:humane_aid_system/pages/productsByIdList_page.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
 import 'dart:convert';
+import 'package:humane_aid_system/map/MapScreen.dart' as FirstMapScreen;
 
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class AdminMainPage extends StatefulWidget {
   const AdminMainPage({super.key});
@@ -50,8 +47,8 @@ class _AdminMainPageState extends State<AdminMainPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Expanded(
-            child: MapSample(),
+          Expanded(
+            child: FirstMapScreen.MapScreenGoogle(),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -103,15 +100,15 @@ class _AdminMainPageState extends State<AdminMainPage> {
                     );
                   },
                 ),
-                CustomButton(
-                  text: 'Update Status of Affected Aid Request',
-                  onPressed: () {
-                    // showDialog(
-                    //   context: context,
-                    //    builder: (_) => _buildUpdateStatusAffectedRequest(context),
-                    // );
-                  },
-                ),
+                // CustomButton(
+                //   text: 'Update Status of Affected Aid Request',
+                //   onPressed: () {
+                //     // showDialog(
+                //     //   context: context,
+                //     //    builder: (_) => _buildUpdateStatusAffectedRequest(context),
+                //     // );
+                //   },
+                // ),
               ],
             ),
           ),
@@ -177,7 +174,7 @@ class _AdminMainPageState extends State<AdminMainPage> {
     );
   }
 
-  Future<BaseModel<ProductModel>> createProduct(
+  Future<BaseModel<int>> createProduct(
     String token,
     String name,
     String category,
@@ -191,18 +188,19 @@ class _AdminMainPageState extends State<AdminMainPage> {
           .post(
             url,
             headers: Me.instance.authHeader,
-            body: jsonEncode(<String, dynamic>{
-              "name": name,
-              "category": category,
-            }),
+            body: jsonEncode(
+              <String, dynamic>{
+                "name": name,
+                "category": category,
+              },
+            ),
           )
           .timeout(const Duration(seconds: 60));
       switch (response.statusCode) {
         case 200:
-          return BaseModel<ProductModel>.fromJson(
+          return BaseModel<int>.fromJson(
             json: json.decode(response.body),
-            d: ProductModel.fromJson(json.decode(response.body)["data"]) ??
-                ProductModel(),
+            d: json.decode(response.body)["data"] ?? 0,
           );
         default:
           return BaseModel.fromJson(json: json.decode(response.body));
@@ -319,12 +317,12 @@ Future<BaseModel<int>> deleteProduct(String token, int id) async {
       },
     ).timeout(const Duration(seconds: 60));
 
-    print('Response body: ${response.body}'); // Yanıt gövdesini yazdır
+    log('Response body: ${response.body}');
 
     if (response.statusCode == 200) {
       return BaseModel<int>.fromJson(
         json: json.decode(response.body),
-        d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
+        d: json.decode(response.body)["data"] ?? 0,
       );
     } else {
       return BaseModel.fromJson(json: json.decode(response.body));
@@ -431,7 +429,7 @@ Future<BaseModel<int>> updateAidPointStatus(
       case 200:
         return BaseModel<int>.fromJson(
           json: json.decode(response.body),
-          d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
+          d: json.decode(response.body)["data"] ?? 0,
         );
       default:
         return BaseModel.fromJson(json: json.decode(response.body));
@@ -574,84 +572,6 @@ Future<BaseModel<int>> removeHelpPoint(String token, int id) async {
   }
 }
 
-//-------------------------------------------------------------------------------------------
-
-//---------------------------------Update Status of Affected Aid Request-----------------------------------------------
-
-// Widget _buildUpdateStatusAffectedRequest(BuildContext context) {
-//   final _idController = TextEditingController();
-//   AidRequest? _selectedStatus;
-
-//   return AlertDialog(
-//     title: Text('Update Status of Affected Aid Request'),
-//     content: Column(
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         TextField(
-//           controller: _idController,
-//           decoration: InputDecoration(labelText: 'Aid Request ID'),
-//           keyboardType: TextInputType.number,
-//         ),
-//         DropdownButton<AidRequest>(
-//           hint: Text('Select Status'),
-//           value: _selectedStatus,
-//           items: AidRequest.map((AidRequest status) {
-//             return DropdownMenuItem<AidRequest>(
-//               value: status,
-//               child: Text(status.toString().split('.').last),
-//             );
-//           }).toList(),
-//           onChanged: (AidRequest? newValue) {
-//             _selectedStatus = newValue;
-//           },
-//         ),
-//       ],
-//     ),
-//     actions: [
-//       TextButton(
-//         onPressed: () => Navigator.pop(context),
-//         child: Text('Cancel'),
-//       ),
-//       TextButton(
-//         onPressed: () async {
-//           final id = int.tryParse(_idController.text);
-//           final status = _selectedStatus;
-
-//           if (id == null || status == null) {
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(
-//                 content: Text('Invalid ID or Status'),
-//                 backgroundColor: Colors.red,
-//               ),
-//             );
-//             return;
-//           }
-
-//           final response = await updateAidRequestStatus(id, status.index);
-
-//           if (response.succeeded == true) {
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(
-//                 content: Text('Aid Request status updated successfully!'),
-//                 backgroundColor: Colors.green,
-//               ),
-//             );
-//             Navigator.pop(context);
-//           } else {
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(
-//                 content: Text('Failed to update aid request status: ${response.message}'),
-//                 backgroundColor: Colors.red,
-//               ),
-//             );
-//           }
-//         },
-//         child: Text('Update'),
-//       ),
-//     ],
-//   );
-// }
-
 Future<BaseModel<int>> updateAidRequestStatus(
   int id,
   int status,
@@ -780,7 +700,7 @@ Widget _buildAddHelpPoint(BuildContext context) {
             );
           }
         },
-        child: Text('Add yasin'),
+        child: Text('Add '),
       ),
     ],
   );
@@ -810,7 +730,7 @@ Future<BaseModel<int>> addHelpPoint(String token, String name, String location,
       case 200:
         return BaseModel<int>.fromJson(
           json: json.decode(response.body),
-          d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
+          d: json.decode(response.body)["data"] ?? 0,
         );
       default:
         return BaseModel.fromJson(json: json.decode(response.body));
@@ -821,3 +741,81 @@ Future<BaseModel<int>> addHelpPoint(String token, String name, String location,
     throw Exception(e.toString());
   }
 }
+
+//-------------------------------------------------------------------------------------------
+
+//---------------------------------Update Status of Affected Aid Request-----------------------------------------------
+
+// Widget _buildUpdateStatusAffectedRequest(BuildContext context) {
+//   final _idController = TextEditingController();
+//   AidRequest? _selectedStatus;
+
+//   return AlertDialog(
+//     title: Text('Update Status of Affected Aid Request'),
+//     content: Column(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         TextField(
+//           controller: _idController,
+//           decoration: InputDecoration(labelText: 'Aid Request ID'),
+//           keyboardType: TextInputType.number,
+//         ),
+//         DropdownButton<AidRequest>(
+//           hint: Text('Select Status'),
+//           value: _selectedStatus,
+//           items: AidRequest.map((AidRequest status) {
+//             return DropdownMenuItem<AidRequest>(
+//               value: status,
+//               child: Text(status.toString().split('.').last),
+//             );
+//           }).toList(),
+//           onChanged: (AidRequest? newValue) {
+//             _selectedStatus = newValue;
+//           },
+//         ),
+//       ],
+//     ),
+//     actions: [
+//       TextButton(
+//         onPressed: () => Navigator.pop(context),
+//         child: Text('Cancel'),
+//       ),
+//       TextButton(
+//         onPressed: () async {
+//           final id = int.tryParse(_idController.text);
+//           final status = _selectedStatus;
+
+//           if (id == null || status == null) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('Invalid ID or Status'),
+//                 backgroundColor: Colors.red,
+//               ),
+//             );
+//             return;
+//           }
+
+//           final response = await updateAidRequestStatus(id, status.index);
+
+//           if (response.succeeded == true) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('Aid Request status updated successfully!'),
+//                 backgroundColor: Colors.green,
+//               ),
+//             );
+//             Navigator.pop(context);
+//           } else {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('Failed to update aid request status: ${response.message}'),
+//                 backgroundColor: Colors.red,
+//               ),
+//             );
+//           }
+//         },
+//         child: Text('Update'),
+//       ),
+//     ],
+//   );
+// }

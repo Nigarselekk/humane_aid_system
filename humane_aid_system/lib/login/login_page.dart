@@ -3,8 +3,8 @@ import 'package:humane_aid_system/login/register_page.dart';
 import 'package:humane_aid_system/login/affected_login_page.dart';
 import 'package:humane_aid_system/login/donor_login_page.dart';
 import 'package:humane_aid_system/login/admin_login_page.dart';
-import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:humane_aid_system/services/ApiService.dart';
+import 'package:humane_aid_system/map/MapScreen.dart' as FirstMapScreen;
 
 class LoginPage extends StatelessWidget {
   @override
@@ -18,8 +18,8 @@ class LoginPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const Expanded(
-              child: MapSample(),
+            Expanded(
+              child: FirstMapScreen.MapScreenGoogle(),
             ),
             Center(
               child: ListBody(
@@ -31,7 +31,6 @@ class LoginPage extends StatelessWidget {
                   SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Afetzede girişi için işlevi çağır
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -45,7 +44,6 @@ class LoginPage extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Yardım eden girişi için işlevi çağır
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -59,7 +57,6 @@ class LoginPage extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Admin girişi için işlevi çağır
                       Navigator.push(
                         context,
                         MaterialPageRoute(

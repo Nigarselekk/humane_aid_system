@@ -68,7 +68,7 @@ class MapSampleState extends State<MapSample> {
         markers: {
           _kGoogleFlexMarker,
           // _kLakeMarker
-          },
+        },
         // polylines: {
         //   _polyline,
         // },

@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
+// import 'dart:developer';
 import 'dart:io';
 
-import 'package:humane_aid_system/my_service/my_service_models/account_models/authenticate_model.dart';
+import 'package:humane_aid_system/my/my_service_models/account_models/authenticate_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Me {
@@ -24,8 +24,8 @@ class Me {
 
   Future<bool> logInAndSaveInfo(AuthenticateModel myNewInfo) async {
     try {
-      log(myNewInfo.toRawJson());
-      log("Bilgiler tutuldu");
+    //   log(myNewInfo.toRawJson());
+    //   log("Bilgiler tutuldu");
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('myInfo', myNewInfo.toRawJson());
       setMe = myNewInfo;

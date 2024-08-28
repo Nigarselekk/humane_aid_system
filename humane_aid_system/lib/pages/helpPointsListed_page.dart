@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:flutter/material.dart';
 import 'package:humane_aid_system/map/AidPoint.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
+import 'package:http/http.dart' as http;
 
 class HelpPointsListedPage extends StatefulWidget {
   @override
@@ -11,20 +12,24 @@ class HelpPointsListedPage extends StatefulWidget {
 }
 
 class _HelpPointsPageState extends State<HelpPointsListedPage> {
-  Future<List<AidPoint>> fetchAidPoints() async {
+  Future<List<AidPoint>> getAidPoints() async {
     try {
-      var url = Uri.https(SI.serverName, 
-      '${SI.api}/${SI.aidPoint}/get-all');
+      var url = Uri.https(SI.serverName, '${SI.api}/${SI.aidPoint}/get-all');
       final response = await http.get(url, headers: Me.instance.authHeader);
 
       if (response.statusCode == 200) {
+        print('API Response: ${response.body}');
+
         List<dynamic> data = json.decode(response.body)['data'];
-        return data.map((item) => AidPoint.fromJson(item)).toList();
+        return data.map((item) {
+          print('Parsing item: $item');
+          return AidPoint.fromJson(item);
+        }).toList();
       } else {
         throw Exception('Failed to load help points');
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Error fetching aid points: ${e.toString()}');
     }
   }
 
@@ -49,8 +54,9 @@ class _HelpPointsPageState extends State<HelpPointsListedPage> {
               itemBuilder: (context, index) {
                 final helpPoint = snapshot.data![index];
                 return ListTile(
-                  title: Text(helpPoint.name!),
-                  subtitle: Text('ID: ${helpPoint.status}'),
+                  title: Text(helpPoint.name),
+                  trailing: Text('ID: ${helpPoint.id}'),
+                  subtitle: Text(helpPoint.status),
                 );
               },
             );
@@ -60,9 +66,3 @@ class _HelpPointsPageState extends State<HelpPointsListedPage> {
     );
   }
 }
-
-
-
-
-
-

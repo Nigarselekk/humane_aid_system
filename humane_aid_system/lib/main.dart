@@ -7,12 +7,15 @@ import 'package:humane_aid_system/pages/donor_main_page.dart';
 import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:humane_aid_system/services/ApiService.dart';
 
+import 'dart:io';
+
 void main() {
   final String backendUrl =
       'https://humaneaidsystem1.azurewebsites.net/swagger';
 
   final ApiService apiService = ApiService(backendUrl);
 
+  HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp(apiService));
 }
 
@@ -34,5 +37,14 @@ class MyApp extends StatelessWidget {
 
       // home: MapScreenGoogle(),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

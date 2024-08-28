@@ -49,12 +49,10 @@ class _MapScreenGoogleState extends State<MapScreenGoogle> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Aid Points Map'),
-      ),
-    
+      // appBar: AppBar(
+      //     // title: Text('Aid Points Map'),
+      //     ),
       body: GoogleMap(
-        
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
           target: _center,
@@ -66,39 +64,35 @@ class _MapScreenGoogleState extends State<MapScreenGoogle> {
   }
 }
 
-
-
 Future<List<AidPoint>> getLocations() async {
-    try {
-      var url = 'https://humaneaidsystem1.azurewebsites.net/swagger/';
-      final resp = await http.get(url as Uri);
-      final responsebody = jsonDecode(resp.body);
-      return responsebody; //this return a list
-    } catch (e) {
-      return [];
-    }
+  try {
+    var url = 'https://humaneaidsystem1.azurewebsites.net/swagger/';
+    final resp = await http.get(url as Uri);
+    final responsebody = jsonDecode(resp.body);
+    return responsebody; //this return a list
+  } catch (e) {
+    return [];
   }
+}
 
-  List<Marker> allMarkers = [];
+List<Marker> allMarkers = [];
 
-  loadLocations() async {
-    List<AidPoint> locations;
-    locations = [];
-    locations = await getLocations(); //we store the response in a list
-    for (var i = 0; i < locations.length; i++) {
-      LatLng latlng;
-      latlng = LatLng(
-      
-        double.parse(locations[i].latitude as String),
-        double.parse(locations[i].longitude as String),
-      );
-      allMarkers.add(
-        Marker(
-          markerId: MarkerId(locations[i].location as String),
-          position: latlng,
-        ),
-      );
-    }
-    // setState(() {});
+loadLocations() async {
+  List<AidPoint> locations;
+  locations = [];
+  locations = await getLocations(); //we store the response in a list
+  for (var i = 0; i < locations.length; i++) {
+    LatLng latlng;
+    latlng = LatLng(
+      double.parse(locations[i].latitude as String),
+      double.parse(locations[i].longitude as String),
+    );
+    allMarkers.add(
+      Marker(
+        markerId: MarkerId(locations[i].location as String),
+        position: latlng,
+      ),
+    );
   }
-  
+  // setState(() {});
+}

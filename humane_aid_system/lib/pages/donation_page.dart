@@ -1,13 +1,10 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:humane_aid_system/models/donation_model.dart';
 import 'package:humane_aid_system/services/get_all_product_service.dart';
 import 'package:humane_aid_system/models/get_all_product_model.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 import 'package:http/http.dart' as http;
 
 class DonationPage extends StatefulWidget {
@@ -19,7 +16,7 @@ class DonationPage extends StatefulWidget {
 
 class _DonationPageState extends State<DonationPage> {
   String? selectedCategory;
-  String? selectedProduct;
+  String product = '';
   int quantity = 1;
   int selectedProductId = 0;
 
@@ -63,12 +60,12 @@ class _DonationPageState extends State<DonationPage> {
   }
 
   Future<void> makeDonation() async {
-    if (selectedCategory != null && selectedProduct != null && quantity > 0) {
+    if (selectedCategory != null && product.isNotEmpty && quantity > 0) {
       Map<String, dynamic> donationData = {
         'products': [
           {
-            'id':  selectedProductId,
-            'name': selectedProduct,
+            'id': selectedProductId,
+            'name': product,
             'category': selectedCategory,
             'amount': quantity,
           }
@@ -86,12 +83,12 @@ class _DonationPageState extends State<DonationPage> {
           headers: Me.instance.authHeader,
           body: jsonEncode(donationData),
         );
-        log(response.body.toString());
+        // log(response.body.toString());
         if (response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  'Your donation has been successfully made.Thanks for your donation.'),
+                  'Your donation has been successfully made. Thanks for your donation.'),
               backgroundColor: Colors.green,
             ),
           );
@@ -104,8 +101,6 @@ class _DonationPageState extends State<DonationPage> {
           );
         }
       } catch (e) {
-        // print('Error making donation: $e');
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to make donation: $e'),
@@ -114,7 +109,7 @@ class _DonationPageState extends State<DonationPage> {
         );
       }
     } else {
-      // If any required field is missing, show an error message
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please select category, product, and quantity.'),
@@ -143,7 +138,6 @@ class _DonationPageState extends State<DonationPage> {
                     onChanged: (value) {
                       setState(() {
                         selectedCategory = value;
-                        selectedProduct = null; // Reset product selection
                       });
                     },
                     items: categoryItems.keys.map((category) {
@@ -155,20 +149,16 @@ class _DonationPageState extends State<DonationPage> {
                   ),
                   if (selectedCategory != null) ...[
                     SizedBox(height: 16.0),
-                    DropdownButton<String>(
-                      hint: Text('Select Product'),
-                      value: selectedProduct,
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Product',
+                        border: OutlineInputBorder(),
+                      ),
                       onChanged: (value) {
                         setState(() {
-                          selectedProduct = value;
+                          product = value;
                         });
                       },
-                      items: categoryItems[selectedCategory]!.map((product) {
-                        return DropdownMenuItem(
-                          value: product,
-                          child: Text(product),
-                        );
-                      }).toList(),
                     ),
                     SizedBox(height: 16.0),
                     Row(
@@ -196,7 +186,7 @@ class _DonationPageState extends State<DonationPage> {
                   Spacer(),
                   ElevatedButton(
                     onPressed:
-                        selectedCategory != null && selectedProduct != null
+                        selectedCategory != null && product.isNotEmpty
                             ? makeDonation
                             : null,
                     style: ElevatedButton.styleFrom(

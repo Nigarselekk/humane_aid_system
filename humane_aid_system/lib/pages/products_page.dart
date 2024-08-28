@@ -3,7 +3,7 @@ import 'package:humane_aid_system/models/get_all_product_model.dart';
 import 'package:humane_aid_system/pages/request_page.dart';
 import 'package:humane_aid_system/pages/basket_page.dart';
 import 'package:humane_aid_system/services/get_all_product_service.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({Key? key}) : super(key: key);

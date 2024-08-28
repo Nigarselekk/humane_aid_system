@@ -5,10 +5,10 @@ import 'package:humane_aid_system/login/forget_password_page.dart';
 import 'package:humane_aid_system/login/register_page.dart';
 import 'package:humane_aid_system/services/ApiService.dart';
 import 'package:humane_aid_system/pages/admin_main_page.dart';
-import 'package:humane_aid_system/my_service/my_service/account_service.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service_models/account_models/authenticate_model.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service/account_service.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service_models/account_models/authenticate_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class AdminLoginPage extends StatefulWidget {
   final ApiService apiService;
@@ -22,8 +22,8 @@ class AdminLoginPage extends StatefulWidget {
 class _AdminLoginPageState extends State<AdminLoginPage> {
   final _myController1 = TextEditingController();
   final _myController2 = TextEditingController();
-  String _email = "admin@example.com";
-  String _password = "A.1string";
+  String _email = "";
+  String _password = "";
 
   @override
   void initState() {

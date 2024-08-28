@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/pages/donation_page.dart';
-import 'package:humane_aid_system/pages/map_screen.dart';
+import 'package:humane_aid_system/map/MapScreen.dart' as FirstMapScreen;
+
 
 class DonorMainPage extends StatelessWidget {
   @override
@@ -12,8 +13,8 @@ class DonorMainPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Expanded(
-            child: MapSample(),
+            Expanded(
+            child: FirstMapScreen.MapScreenGoogle(),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),

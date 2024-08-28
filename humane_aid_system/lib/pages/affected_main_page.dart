@@ -1,13 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/login/new_login_page.dart';
 import 'package:humane_aid_system/models/aidPoint_model.dart';
-import 'package:humane_aid_system/pages/map_screen.dart';
 import 'package:humane_aid_system/pages/products_page.dart';
 import 'package:humane_aid_system/services/aidPoint_service.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
 import 'package:http/http.dart' as http;
+import 'package:humane_aid_system/map/MapScreen.dart' as FirstMapScreen;
+
 
 class AffectedMainPage extends StatefulWidget {
   const AffectedMainPage({Key? key}) : super(key: key);
@@ -38,12 +36,12 @@ class _AffectedMainPageState extends State<AffectedMainPage> {
       appBar: AppBar(
         title: Text('Main Page'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              _logout();
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.logout),
+          //   onPressed: () {
+          //     _logout();
+          //   },
+          // ),
         ],
       ),
       body: Padding(
@@ -77,7 +75,7 @@ class _AffectedMainPageState extends State<AffectedMainPage> {
             Expanded(
               child: _isSearching
                   ? SearchResultsList(searchResults: _searchResults)
-                  : const MapSample(),
+                  : FirstMapScreen.MapScreenGoogle(),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),

@@ -3,20 +3,6 @@ import 'dart:convert';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-// import 'package:humane_aid_system/map/AidPoint.dart';
-
-// Future<List<AidPoint>> fetchAidPoints() async {
-//   final response = await http.get(Uri.parse('https://humaneaidsystem1.azurewebsites.net/api/AidPoint/get-all'));
-
-//   if (response.statusCode == 200) {
-//     List<dynamic> data = json.decode(response.body) ['data'];
-//     return data.map((json) => AidPoint.fromJson(json)).toList();
-//   } else {
-//     throw Exception('Failed to load aid points');
-//   }
-// }
-
-
 import 'package:humane_aid_system/map/AidPoint.dart';
 
 Future<List<AidPoint>> getLocations() async {

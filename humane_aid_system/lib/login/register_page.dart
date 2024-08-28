@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/models/register_model.dart';
 import 'package:humane_aid_system/services/register_service.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class RegisterPage extends StatefulWidget {
   @override

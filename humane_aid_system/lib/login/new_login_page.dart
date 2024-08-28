@@ -3,10 +3,10 @@ import 'package:humane_aid_system/login/forget_password_page.dart';
 import 'package:humane_aid_system/login/login_page.dart';
 import 'package:humane_aid_system/login/register_page.dart';
 import 'package:humane_aid_system/pages/affected_main_page.dart';
-import 'package:humane_aid_system/my_service/my_service/account_service.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service_models/account_models/authenticate_model.dart';
-import 'package:humane_aid_system/my_service/my_service_models/base_model.dart';
+import 'package:humane_aid_system/my/my_service/account_service.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service_models/account_models/authenticate_model.dart';
+import 'package:humane_aid_system/my/my_service_models/base_model.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({Key? key}) : super(key: key);

@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:humane_aid_system/models/product_model.dart';
-import 'package:humane_aid_system/my_service/my_service/constant.dart';
-import 'package:humane_aid_system/my_service/my_service/server_info.dart';
+import 'package:humane_aid_system/my/my_service/constant.dart';
+import 'package:humane_aid_system/my/my_service/server_info.dart';
 import 'package:http/http.dart' as http;
+
 
 class ProductsByIdListPage extends StatefulWidget {
   @override
@@ -55,8 +56,7 @@ class _ProductListPageState extends State<ProductsByIdListPage> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No products found'));
           } else {
-            Map<String, List<ProductModel>> groupedProducts =
-                groupByCategory(snapshot.data!);
+            Map<String, List<ProductModel>> groupedProducts = groupByCategory(snapshot.data!);
             return ListView(
               children: groupedProducts.entries.map((entry) {
                 return ExpansionTile(
@@ -76,3 +76,4 @@ class _ProductListPageState extends State<ProductsByIdListPage> {
     );
   }
 }
+
