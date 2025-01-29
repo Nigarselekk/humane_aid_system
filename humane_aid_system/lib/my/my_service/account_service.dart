@@ -89,39 +89,4 @@ class AccountService {
       );
     }
   }
-
-  static Future<BaseModel<int>> getAnInt(
-    int ali,
-    bool veli,
-  ) async {
-    try {
-      var url = Uri.https(
-        SI.serverName,
-        '${SI.api}/${SI.account}/authenticate',
-      );
-      final http.Response response = await http
-          .post(
-            url,
-            headers: Me.instance.header,
-            body: jsonEncode(<String, dynamic>{
-              "ali": ali,
-              "veli": veli,
-            }),
-          )
-          .timeout(const Duration(seconds: 60));
-      switch (response.statusCode) {
-        case 200:
-          return BaseModel<int>.fromJson(
-            json: json.decode(response.body),
-            d: int.tryParse(json.decode(response.body)["data"]) ?? 0,
-          );
-        default:
-          return BaseModel.fromJson(json: json.decode(response.body));
-      }
-    } on TimeoutException {
-      throw Exception("Timeout... ");
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
 }
